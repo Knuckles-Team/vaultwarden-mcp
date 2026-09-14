@@ -1,0 +1,22 @@
+{
+  "mcpServers": {
+    "vaultwarden-mcp": {
+      "command": "uv",
+      "args": [
+        "run",
+        "vaultwarden-mcp"
+      ],
+      "env": {
+        "MCP_TOOL_MODE": "intent",
+        "ACCOUNTSTOOL": "True",
+        "ADMINTOOL": "True",
+        "CIPHERSTOOL": "True",
+        "FOLDERSTOOL": "True",
+        "MAINTENANCETOOL": "True",
+        "ORGANIZATIONSTOOL": "True",
+        "SENDSTOOL": "True",
+        "SYSTEMTOOL": "True"
+      }
+    }
+  }
+}

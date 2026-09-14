@@ -1,0 +1,102 @@
+[build-system]
+requires = [ "setuptools>=80.9.0", "wheel",]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "vaultwarden-mcp"
+version = "0.1.0"
+description = "Vaultwarden API + Bitwarden vault MCP Server and A2A Agent for Agentic AI!"
+readme = "README.md"
+classifiers = [ "Development Status :: 4 - Beta", "License :: OSI Approved :: MIT License", "Environment :: Console", "Operating System :: POSIX :: Linux", "Programming Language :: Python :: 3",]
+requires-python = ">=3.12, <3.15"
+dependencies = [
+    "agent-utilities[mcp]>=2.0.0,<3.0.0",
+    "argon2-cffi>=25.1.0,<26.0.0",
+    "cryptography>=50.0.1,<51.0.0",
+]
+[[project.authors]]
+name = "Repository Maintainers"
+
+[project.license]
+text = "MIT"
+
+[project.optional-dependencies]
+mcp = [ "agent-utilities[mcp]>=2.0.0,<3.0.0",]
+agent = [ "agent-utilities[agent-runtime,logfire]>=2.0.0,<3.0.0",]
+all = [
+    "agent-utilities[mcp,agent-runtime,logfire]>=2.0.0,<3.0.0",
+]
+test = [
+    "pytest-xdist>=3.6.0", "pytest", "pytest-asyncio", "pytest-cov",]
+
+[project.scripts]
+vaultwarden-mcp = "vaultwarden_mcp.mcp_server:mcp_server"
+vaultwarden-agent = "vaultwarden_mcp.agent_server:agent_server"
+
+# Fleet contribution (CONCEPT:AU-KG.ontology.federation-provider-leg): advertise this
+# package's skills, prompts, OWL/RDF ontology, and source-connector presets so
+# agent-utilities discovers + federates them without importing this package's agent code.
+[project.entry-points."agent_utilities.skill_providers"]
+vaultwarden-mcp = "vaultwarden_mcp.skills"
+
+[project.entry-points."agent_utilities.prompt_providers"]
+vaultwarden-mcp = "vaultwarden_mcp.prompts"
+
+[project.entry-points."agent_utilities.ontology_providers"]
+vaultwarden-mcp = "vaultwarden_mcp.ontology"
+
+[project.entry-points."agent_utilities.source_connector_providers"]
+vaultwarden-mcp = "vaultwarden_mcp.connectors"
+
+# CONCEPT:P0.2-nested-uv-workspace-fix — self-declare this package as its own uv
+# workspace root. Without this, uv's workspace discovery walks upward from this
+# package's directory, finds the outer ecosystem workspace at
+# /home/apps/workspace/pyproject.toml, and unconditionally refuses because
+# agent-utilities -- also a member of that outer workspace -- is itself a
+# self-contained uv workspace root ("Nested workspaces are not supported"). This
+# stops discovery here instead, independent of whether uv is invoked from the
+# canonical checkout or an external worktree. The path-dependency source below
+# (rather than `agent-utilities = { workspace = true }`) is required for the same
+# reason: agent-utilities isn't published on PyPI past 1.26.4, so this package must
+# resolve it from the local sibling checkout via a gitignored symlink, not a
+# version-range dependency.
+[tool.uv.workspace]
+members = ["."]
+
+[tool.uv]
+override-dependencies = [
+    "fastmcp-slim[client,server]>=4.0.0b1",
+]
+
+[tool.uv.sources]
+agent-utilities = { path = ".uv-workspace-siblings/agent-utilities", editable = true }
+
+[tool.setuptools]
+include-package-data = true
+
+[tool.ruff]
+line-length = 88
+target-version = "py312"
+
+[tool.mypy]
+python_version = "3.12"
+ignore_missing_imports = true
+check_untyped_defs = true
+
+[dependency-groups]
+dev = [
+    "pytest-timeout>=2.4.0",
+]
+
+[tool.setuptools.package-data]
+vaultwarden_mcp = [ "mcp_config.json", "prompts/**", "skills/**", "ontology/**", "connectors/**",]
+
+[tool.ruff.lint]
+select = [ "E", "F", "I", "UP", "B",]
+ignore = [ "E402", "E501", "B008",]
+
+[tool.setuptools.packages.find]
+where = [ ".",]
+
+[tool.vulture]
+ignore_names = ["request", "config"]

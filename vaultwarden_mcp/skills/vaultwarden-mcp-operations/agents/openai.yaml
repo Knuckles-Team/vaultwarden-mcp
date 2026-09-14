@@ -1,0 +1,4 @@
+interface:
+  display_name: "Vaultwarden MCP Operations"
+  short_description: "Help with Vaultwarden MCP Operations tasks"
+  default_prompt: "Use $vaultwarden-mcp-operations to complete a governed provider workflow."

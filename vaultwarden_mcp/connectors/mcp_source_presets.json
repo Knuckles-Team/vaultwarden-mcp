@@ -1,0 +1,12 @@
+{
+  "_comment": "Tier-1 mcp_tool source preset(s) (AU-KG.ingest.mcp-tool-connector). Contributed presets win over the central MCP_TOOL_PRESETS.",
+  "vaultwarden-ciphers": {
+    "server": "vaultwarden-mcp",
+    "tool": "vaultwarden_ciphers",
+    "action": "sync",
+    "records_path": "ciphers",
+    "id_field": "id",
+    "updated_field": "revisionDate",
+    "doc_type": "vaultwarden_cipher"
+  }
+}

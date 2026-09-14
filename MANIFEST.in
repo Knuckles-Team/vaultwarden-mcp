@@ -1,0 +1,9 @@
+include LICENSE
+include README.md
+include requirements.txt
+# Scanner policies and wrappers are included in source distributions so a
+# checkout recreated from the sdist has the same reviewed quality surface.
+# They remain source-checkout tooling, not runtime wheel/package data; hooks
+# never install these native tools and the Docker runtime excludes scripts/.
+include .pre-commit-config.yaml
+recursive-include vaultwarden_mcp *.py *.json *.md *.yaml *.yml

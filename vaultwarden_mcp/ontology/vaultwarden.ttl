@@ -1,0 +1,155 @@
+@prefix : <http://knuckles.team/kg#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+# Vaultwarden / Bitwarden-compatible password manager — METADATA ONLY.
+#
+# Every item name, username, password, note, URI, folder name, and collection name is
+# client-side encrypted user content. None of it is modelled here or ever ingested.
+# The graph carries identifiers, types, lifecycle dates, counts, and relationships.
+# Classes live in the shared : namespace, so every term is Vaultwarden-prefixed to avoid
+# colliding with other vault providers (e.g. :VaultServer).
+
+:VaultwardenServer a owl:Class ;
+    rdfs:label "Vaultwarden Server" ;
+    rdfs:comment "A Bitwarden-compatible server instance." .
+
+:VaultwardenAccount a owl:Class ;
+    rdfs:label "Vaultwarden Account" ;
+    rdfs:comment "A user account on a Vaultwarden server, identified opaquely." .
+
+:VaultwardenItem a owl:Class ;
+    rdfs:label "Vaultwarden Item" ;
+    rdfs:comment "A vault item (cipher). Only its identity, type, and lifecycle metadata are modelled." .
+
+:VaultwardenLoginItem a owl:Class ;
+    rdfs:subClassOf :VaultwardenItem ;
+    rdfs:label "Vaultwarden Login Item" .
+
+:VaultwardenSecureNoteItem a owl:Class ;
+    rdfs:subClassOf :VaultwardenItem ;
+    rdfs:label "Vaultwarden Secure Note Item" .
+
+:VaultwardenCardItem a owl:Class ;
+    rdfs:subClassOf :VaultwardenItem ;
+    rdfs:label "Vaultwarden Card Item" .
+
+:VaultwardenIdentityItem a owl:Class ;
+    rdfs:subClassOf :VaultwardenItem ;
+    rdfs:label "Vaultwarden Identity Item" .
+
+:VaultwardenSshKeyItem a owl:Class ;
+    rdfs:subClassOf :VaultwardenItem ;
+    rdfs:label "Vaultwarden SSH Key Item" .
+
+:VaultwardenFolder a owl:Class ;
+    rdfs:label "Vaultwarden Folder" ;
+    rdfs:comment "A personal folder. Its name is encrypted and never modelled." .
+
+:VaultwardenOrganization a owl:Class ;
+    rdfs:label "Vaultwarden Organization" .
+
+:VaultwardenCollection a owl:Class ;
+    rdfs:label "Vaultwarden Collection" ;
+    rdfs:comment "An organization collection. Its name is encrypted and never modelled." .
+
+:VaultwardenSend a owl:Class ;
+    rdfs:label "Vaultwarden Send" ;
+    rdfs:comment "A time-limited shared text or file. Contents are never modelled." .
+
+:VaultwardenDevice a owl:Class ;
+    rdfs:label "Vaultwarden Device" .
+
+:vaultwardenOwnedBy a owl:ObjectProperty ;
+    rdfs:label "owned by" ;
+    rdfs:domain :VaultwardenItem ;
+    rdfs:range :VaultwardenAccount .
+
+:vaultwardenInFolder a owl:ObjectProperty ;
+    rdfs:label "in folder" ;
+    rdfs:domain :VaultwardenItem ;
+    rdfs:range :VaultwardenFolder .
+
+:vaultwardenInOrganization a owl:ObjectProperty ;
+    rdfs:label "in organization" ;
+    rdfs:domain :VaultwardenItem ;
+    rdfs:range :VaultwardenOrganization .
+
+:vaultwardenInCollection a owl:ObjectProperty ;
+    rdfs:label "in collection" ;
+    rdfs:domain :VaultwardenItem ;
+    rdfs:range :VaultwardenCollection .
+
+:vaultwardenCollectionOf a owl:ObjectProperty ;
+    rdfs:label "collection of" ;
+    rdfs:domain :VaultwardenCollection ;
+    rdfs:range :VaultwardenOrganization .
+
+:vaultwardenHostedOn a owl:ObjectProperty ;
+    rdfs:label "hosted on" ;
+    rdfs:domain :VaultwardenAccount ;
+    rdfs:range :VaultwardenServer .
+
+:vaultwardenItemType a owl:DatatypeProperty ;
+    rdfs:label "item type" ;
+    rdfs:comment "Bitwarden cipher type code: 1 login, 2 secure note, 3 card, 4 identity, 5 SSH key." ;
+    rdfs:domain :VaultwardenItem ;
+    rdfs:range xsd:integer .
+
+:vaultwardenRevisionDate a owl:DatatypeProperty ;
+    rdfs:label "revision date" ;
+    rdfs:domain :VaultwardenItem ;
+    rdfs:range xsd:dateTime .
+
+:vaultwardenCreationDate a owl:DatatypeProperty ;
+    rdfs:label "creation date" ;
+    rdfs:domain :VaultwardenItem ;
+    rdfs:range xsd:dateTime .
+
+:vaultwardenDeletedDate a owl:DatatypeProperty ;
+    rdfs:label "deleted date" ;
+    rdfs:comment "Set while the item is in trash." ;
+    rdfs:domain :VaultwardenItem ;
+    rdfs:range xsd:dateTime .
+
+:vaultwardenAttachmentCount a owl:DatatypeProperty ;
+    rdfs:label "attachment count" ;
+    rdfs:domain :VaultwardenItem ;
+    rdfs:range xsd:integer .
+
+:vaultwardenHasPasskey a owl:DatatypeProperty ;
+    rdfs:label "has passkey" ;
+    rdfs:domain :VaultwardenLoginItem ;
+    rdfs:range xsd:boolean .
+
+:vaultwardenReprompt a owl:DatatypeProperty ;
+    rdfs:label "master password reprompt" ;
+    rdfs:domain :VaultwardenItem ;
+    rdfs:range xsd:boolean .
+
+:vaultwardenServerVersion a owl:DatatypeProperty ;
+    rdfs:label "server version" ;
+    rdfs:domain :VaultwardenServer ;
+    rdfs:range xsd:string .
+
+:vaultwardenWebVaultVersion a owl:DatatypeProperty ;
+    rdfs:label "web vault version" ;
+    rdfs:domain :VaultwardenServer ;
+    rdfs:range xsd:string .
+
+:vaultwardenSendType a owl:DatatypeProperty ;
+    rdfs:label "send type" ;
+    rdfs:comment "0 text, 1 file." ;
+    rdfs:domain :VaultwardenSend ;
+    rdfs:range xsd:integer .
+
+:vaultwardenDeviceType a owl:DatatypeProperty ;
+    rdfs:label "device type" ;
+    rdfs:domain :VaultwardenDevice ;
+    rdfs:range xsd:integer .
+
+<http://knuckles.team/kg/vaultwarden> a owl:Ontology ;
+    rdfs:label "Vaultwarden Ontology" ;
+    rdfs:comment "Vaultwarden password-manager metadata federated into the KG hub. No vault contents." ;
+    owl:imports <http://knuckles.team/kg> .
