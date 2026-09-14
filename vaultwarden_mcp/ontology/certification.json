@@ -1,0 +1,36 @@
+{
+  "api_version": "graphos.io/v1",
+  "artifacts": {
+    "connector_manifest.yml": "64354cb910f95be7d0b84a37df77c8a249f15cbf102cb1cd16488215b3e42f43",
+    "vaultwarden_mcp/connectors/mcp_source_presets.json": "dd181ffe9bfda0cdc1405668234b17c6d6fb67064fab8810fc31b7d1aefd3125",
+    "vaultwarden_mcp/connectors/tool_schema_fingerprints.json": "464af4ca22dd74e708818df6593a6bd5b2ad0de84e7a2d4a3663efa3daf533f9",
+    "vaultwarden_mcp/ontology/fixtures/records.json": "6ef191f06381df50269f200baa351c49b13ff3a13c0f913cc2dc57c487a35414",
+    "vaultwarden_mcp/ontology/mappings/source.yaml": "21f38aa8b5f5caf9da372419e6ece639123fb5e3e90433e81e40a8a6127aaf4a",
+    "vaultwarden_mcp/ontology/migrations/manifest.json": "023b713d459e4c14274b468b1bece315970f23230882e9b2859563e5e6d444dd",
+    "vaultwarden_mcp/ontology/shapes/connector.shacl.ttl": "8d91a2717dd0902eebcc1b8b382af3ab08846b07dfe09d186a17d475a05338c9",
+    "vaultwarden_mcp/ontology/vaultwarden.ttl": "fd9b1650758b66d1c5fa7debb55f8264bcafd1586612d0bd4f3058438d4c12b9"
+  },
+  "checks": {
+    "declared_tool_schema": "passed",
+    "manifest_integrity": "passed",
+    "privacy_contract": "passed",
+    "shacl_parse": "passed",
+    "synthetic_fixture_contract": "passed"
+  },
+  "compatibility": {
+    "agent_utilities": ">=2.5.0,<3",
+    "bundle_schema": "2",
+    "epistemic_graph": ">=2.27.0,<3"
+  },
+  "connector": "vaultwarden-mcp",
+  "kind": "ConnectorSourceAttestation",
+  "live_certified": false,
+  "mode": "offline-source",
+  "schema_version": "2",
+  "signature": null,
+  "signature_algorithm": "none",
+  "signer": "UNSIGNED-PREVIEW",
+  "signing_public_key": "",
+  "status": "source-validated",
+  "validated_at": "2026-09-14T18:46:34Z"
+}

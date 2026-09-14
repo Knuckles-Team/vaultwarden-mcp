@@ -1,0 +1,6 @@
+{
+  "connector": "vaultwarden-mcp",
+  "current_ontology_source": "vaultwarden",
+  "migrations": [],
+  "schema_version": "1"
+}

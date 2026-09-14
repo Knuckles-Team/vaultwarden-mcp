@@ -1,0 +1,20 @@
+schema_version: '1'
+connector: vaultwarden-mcp
+ontology_source: vaultwarden
+sync:
+- preset: vaultwarden-ciphers
+  server: vaultwarden-mcp
+  tool: vaultwarden_ciphers
+  action: sync
+  records_path: ciphers
+  id_field: id
+  title_field: null
+  text_field: null
+  updated_field: revisionDate
+  doc_type: vaultwarden_cipher
+  tool_schema_sha256: 32378a28d056458c37fb0571e62a41064d051c98a0135ac10f5e2854a023aba9
+governance:
+  default_acl: quarantine
+  identity: opaque-reference
+  tenant: required-at-materialization
+  provenance: required-at-materialization
