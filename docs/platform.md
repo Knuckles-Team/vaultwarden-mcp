@@ -16,11 +16,14 @@ one locally as an AgentConfig-selected provider endpoint.
 
 ## Single-node deployment (Compose)
 
+This is an operator-owned example, not a file shipped by this connector. Save it as
+`platform.compose.yml` outside the repository, replace the image placeholder with a
+reviewed immutable digest, and manage its data and secrets with your platform controls.
+
 ```yaml
-# docker/platform.compose.yml — local Vaultwarden instance for development
 services:
   vaultwarden:
-    image: vaultwarden/server:latest
+    image: vaultwarden/server:<reviewed-version>@sha256:<digest>
     container_name: vaultwarden
     restart: unless-stopped
     environment:
@@ -42,7 +45,7 @@ volumes:
 ```
 
 ```bash
-docker compose -f docker/platform.compose.yml up -d
+docker compose -f platform.compose.yml up -d
 ```
 
 ## After it is running
