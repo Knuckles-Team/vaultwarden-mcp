@@ -43,7 +43,7 @@ superset of the `CONCEPT:VW-…` markers actually present in `vaultwarden_mcp/**
 | Concept ID | Name | Origin |
 |------------|------|--------|
 | `AU-KG.ontology.federation-provider-leg` | Ontology Federation Provider Leg | agent-utilities — `agent_utilities.ontology_providers` entry point federates `vaultwarden_mcp/ontology/vaultwarden.ttl`. |
-| `AU-KG.ingest.enterprise-source-extractor` | Enterprise Source Extractor | agent-utilities — the `native_ingest` (Wire-First) primitive `kg_ingest.py` writes through. |
+| `AU-KG.ingest.enterprise-source-extractor` | Enterprise Source Extractor | agent-utilities — `source_sync` validates and commits the certified structural projection emitted by `kg_ingest.py`. |
 | `AU-ECO.mcp.tool-mode-standardization` | MCP Tool-Mode Standardization | agent-utilities — the shared `MCP_TOOL_MODE` (`intent`/`condensed`/`verbose`/`both`) surface every connector inherits. |
 
 > 📖 **Full Registry**: See [`agent-utilities/docs/concepts.md`](https://github.com/Knuckles-Team/agent-utilities/blob/main/docs/concepts.md) for the complete cross-ecosystem concept index.

@@ -14,12 +14,12 @@
     - `vaultwarden_mcp/mcp/`: Modular folder for action-routed dynamic MCP tool tags
       (`vaultwarden_system`, `vaultwarden_accounts`, `vaultwarden_ciphers`,
       `vaultwarden_folders`, `vaultwarden_organizations`, `vaultwarden_sends`,
-      `vaultwarden_admin`, `vaultwarden_maintenance`).
+      `vaultwarden_admin`, `vaultwarden_maintenance`, `vaultwarden_metadata`).
     - `vaultwarden_mcp/crypto/`: Pluggable decrypted-vault backends (`native`, `bw_cli`)
       behind the `VaultCrypto` protocol in `crypto/base.py`.
     - `vaultwarden_mcp/vault/dedupe.py`: Pure planning + bulk-soft-delete apply for
       duplicate vault items.
-    - `vaultwarden_mcp/kg_ingest.py`: Metadata-only knowledge-graph ingestion.
+    - `vaultwarden_mcp/kg_ingest.py`: Certified metadata-only structural projection.
     - `vaultwarden_mcp/mcp_server.py`: Main MCP server entry point and tool registration.
     - `vaultwarden_mcp/agent_server.py`: Pydantic AI agent definition and logic.
 
@@ -31,8 +31,11 @@ graph TD
     Agent --> Skills[Modular Skills]
     Agent --> MCP[MCP Server / FastMCP]
     MCP --> Client[API Client / Wrapper]
+    SourceSync[Agent Utilities source_sync] --> MCP
+    MCP --> Projection[Certified metadata projection]
+    Projection --> SourceSync
     Client --> ExternalAPI([Vaultwarden Server])
-    MCP --> Crypto[VaultCrypto: native | bw_cli]
+    MCP --> Crypto[VaultCrypto: native or bw_cli]
     Crypto --> ExternalAPI
 ```
 
@@ -76,7 +79,7 @@ vaultwarden-agent
 - MCP tool modules → `vaultwarden_mcp/mcp/`
 - Decrypted-vault crypto backends → `vaultwarden_mcp/crypto/`
 - Deduplication → `vaultwarden_mcp/vault/dedupe.py`
-- Knowledge-graph ingestion → `vaultwarden_mcp/kg_ingest.py`
+- Knowledge-graph projection → `vaultwarden_mcp/kg_ingest.py`
 - Tests → `tests/`
 - Documentation → `docs/` (published via mkdocs + GitHub Pages)
 
@@ -143,11 +146,12 @@ Read this before touching `auth.py`, `api/api_client_base.py`, `crypto/`, or
   lower-case or differently-named alias; every consumer (`auth.py`, both crypto backends)
   reads these exact keys.
 - **KG ingestion is metadata-only, by construction, not by convention.** `kg_ingest.py`
-  only ever builds nodes from identifiers, type codes, lifecycle dates, counts, and
-  relationship targets (see `vaultwarden_mcp/ontology/vaultwarden.ttl`). When adding a new
-  ingest mapping, whitelist fields explicitly (as the existing `_item_node`/`_item_edges`
-  helpers do) — never pass a raw decrypted or encrypted record through. If a field could
-  ever hold user-entered vault content, it does not belong in the graph.
+  builds the certified `vaultwarden.metadata-entities/v1` projection from identifiers,
+  type codes, lifecycle dates, counts, and relationship targets (see
+  `vaultwarden_mcp/ontology/vaultwarden.ttl`). Agent Utilities `source_sync` is the only
+  graph commit/checkpoint/reconcile authority; do not restore a connector-local writer or
+  a generic cipher-document preset. When adding a mapping, whitelist fields explicitly.
+  If a field could hold user-entered vault content, it does not belong in the graph.
 - **Two crypto backends, one contract.** `native` (`crypto/native.py`, `crypto/keys.py`,
   `crypto/encstring.py`) is a pure-Python reimplementation of Bitwarden's key derivation
   and EncString handling, validated against the SDK's own published test vectors

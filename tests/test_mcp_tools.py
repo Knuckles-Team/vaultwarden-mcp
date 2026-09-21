@@ -1,5 +1,4 @@
-import sys
-import types
+import json
 from unittest.mock import MagicMock
 
 import pytest
@@ -429,38 +428,94 @@ class TestMaintenance:
         assert "password" not in str(result).lower().replace("passwordHistory", "")
         assert "password" not in result
 
-    async def test_ingest_metadata_calls_mappers(self, monkeypatch):
-        fake_kg_ingest = types.ModuleType("vaultwarden_mcp.kg_ingest")
-        fake_kg_ingest.ingest_items = MagicMock(return_value={"nodes": 1, "edges": 0})
-        fake_kg_ingest.ingest_folders = MagicMock(return_value={"nodes": 1})
-        fake_kg_ingest.ingest_collections = MagicMock(return_value={"nodes": 1})
-        fake_kg_ingest.ingest_server = MagicMock(return_value={"nodes": 1})
-        monkeypatch.setitem(sys.modules, "vaultwarden_mcp.kg_ingest", fake_kg_ingest)
-
-        fn = await _tool_fn(register_maintenance_tools, "vaultwarden_maintenance")
+    async def test_metadata_snapshot_serves_the_certified_projection(self):
+        fn = await _tool_fn(register_maintenance_tools, "vaultwarden_metadata")
         client = _client()
         client.sync_vault.return_value = {
-            "ciphers": [{"id": "c1"}],
-            "folders": [{"id": "f1"}],
-            "collections": [{"id": "col1"}],
+            "ciphers": [
+                {
+                    "id": "c1",
+                    "type": 1,
+                    "name": "must-not-cross",
+                    "notes": "must-not-cross",
+                    "revisionDate": "2026-09-14T00:00:00Z",
+                    "login": {
+                        "username": "must-not-cross",
+                        "password": "must-not-cross",
+                        "uris": [{"uri": "https://must-not-cross.invalid"}],
+                    },
+                    "folderId": "f1",
+                    "organizationId": "org1",
+                    "collectionIds": ["col1"],
+                }
+            ],
+            "folders": [{"id": "f1", "name": "must-not-cross"}],
+            "collections": [
+                {
+                    "id": "col1",
+                    "organizationId": "org1",
+                    "name": "must-not-cross",
+                }
+            ],
         }
-        client.server_config.return_value = {"gitHash": "abc"}
+        client.server_config.return_value = {
+            "gitHash": "abc",
+            "environment": {"adminToken": "must-not-cross"},
+        }
         client.server_version.return_value = "1.37.3"
 
-        result = await fn(action="ingest_metadata", params_json="{}", client=client)
-        assert result["synced"] is True
-        assert result["counts"] == {
-            "items": 1,
-            "folders": 1,
-            "collections": 1,
-            "server": 1,
-        }
-        fake_kg_ingest.ingest_items.assert_called_once_with([{"id": "c1"}])
-        fake_kg_ingest.ingest_folders.assert_called_once_with(["f1"])
-        fake_kg_ingest.ingest_collections.assert_called_once_with([{"id": "col1"}])
-        fake_kg_ingest.ingest_server.assert_called_once_with(
-            {"gitHash": "abc"}, server_version="1.37.3"
+        result = await fn(
+            action="metadata_snapshot",
+            params_json='{"mode": "delta", "checkpoint": "2026-09-13T00:00:00Z"}',
+            client=client,
         )
+
+        assert result["contract"] == "vaultwarden.metadata-entities/v1"
+        assert result["mode"] == "delta"
+        assert result["entities"]
+        assert result["relationships"]
+        assert result["reconcile"] == {"authoritative": False, "live_ids": []}
+        assert result["backfeed"] == {"supported": False, "mode": "read_only"}
+        rendered = json.dumps(result)
+        assert "must-not-cross" not in rendered
+        for forbidden in ("name", "notes", "username", "password", "uris"):
+            assert f'"{forbidden}"' not in rendered
+
+    async def test_metadata_backfeed_refuses_before_provider_calls(self):
+        from vaultwarden_mcp.kg_ingest import MetadataProjectionError
+
+        fn = await _tool_fn(register_maintenance_tools, "vaultwarden_metadata")
+        client = _client()
+
+        with pytest.raises(MetadataProjectionError, match=r"unsupported.*read-only"):
+            await fn(action="backfeed_metadata", params_json="{}", client=client)
+
+        client.sync_vault.assert_not_called()
+        client.server_config.assert_not_called()
+        client.server_version.assert_not_called()
+
+    @pytest.mark.parametrize(
+        ("tool_name", "action"),
+        (
+            ("vaultwarden_maintenance", "metadata_snapshot"),
+            ("vaultwarden_metadata", "apply_deduplication"),
+            ("vaultwarden_maintenance", "ingest_metadata"),
+        ),
+    )
+    async def test_metadata_and_mutation_surfaces_are_disjoint(self, tool_name, action):
+        fn = await _tool_fn(register_maintenance_tools, tool_name)
+        with pytest.raises(ValueError, match="Unknown action"):
+            await fn(action=action, params_json="{}", client=_client())
+
+    async def test_metadata_tool_is_discoverable(self):
+        mcp = FastMCP("test")
+        register_maintenance_tools(mcp)
+        tools = {tool.name for tool in await mcp.list_tools()}
+
+        assert {
+            "vaultwarden_maintenance",
+            "vaultwarden_metadata",
+        } <= tools
 
     async def test_unknown_action(self):
         fn = await _tool_fn(register_maintenance_tools, "vaultwarden_maintenance")

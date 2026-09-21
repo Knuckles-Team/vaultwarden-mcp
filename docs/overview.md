@@ -16,16 +16,18 @@ This project follows the standardized agent-package pattern:
   catalog, and the generated verbose-tool parameter manifest), `crypto/` (pluggable
   decrypted-vault backends), `vault/` (deduplication), and `mcp/` (action-routed
   tool modules) for cleaner organization.
-- **Dynamic Tool Registration**: eight action-routed dynamic tool tags — `system`,
+- **Dynamic Tool Registration**: nine action-routed dynamic tools — `system`,
   `accounts`, `ciphers`, `folders`, `organizations`, `sends`, `admin`, `maintenance` —
-  strictly lowercase, each togglable with a `*TOOL` environment flag. Setting
+  plus the read-only `vaultwarden_metadata` source surface. Registration tags remain
+  strictly lowercase and togglable with a `*TOOL` environment flag. Setting
   `MCP_TOOL_MODE=verbose` additionally exposes one fully-typed tool per API operation.
 - **Two crypto backends behind one contract**: `native` (pure-Python Bitwarden key
   derivation and EncString handling) and `bw_cli` (delegates to an installed Bitwarden
   CLI), both implementing the same `VaultCrypto` protocol so higher-level operations —
   item read/write, deduplication — behave identically on either backend.
-- **Metadata-only knowledge graph**: `kg_ingest.py` maps vault entities to typed OWL
-  nodes without ever reading item names, usernames, passwords, notes, URIs, or keys.
+- **Metadata-only knowledge graph**: `kg_ingest.py` builds the certified structural
+  projection consumed by Agent Utilities `source_sync`; it never writes independently
+  or emits item names, usernames, passwords, notes, URIs, or keys.
 - **A2A Agent Server**: a Pydantic-AI graph agent (console script `vaultwarden-agent`)
   that calls the MCP tool surface and exposes an AG-UI web interface.
 
@@ -42,7 +44,7 @@ This project implements or inherits the following ecosystem concepts. See
 | `VW-KG.ingest.metadata-only` | Vault contents never reach the knowledge graph | `vaultwarden-mcp` |
 | `VW-ECO.vault.deduplication` | Exact/loose duplicate planning and bulk soft-delete apply | `vaultwarden-mcp` |
 | `AU-KG.ontology.federation-provider-leg` | Ontology federation via the `agent_utilities.ontology_providers` entry point | `agent-utilities` (inherited) |
-| `AU-KG.ingest.enterprise-source-extractor` | Native ingest primitive for enterprise-source connectors | `agent-utilities` (inherited) |
+| `AU-KG.ingest.enterprise-source-extractor` | Source-sync validation and native commit authority for enterprise connectors | `agent-utilities` (inherited) |
 | `AU-ECO.mcp.tool-mode-standardization` | Shared `MCP_TOOL_MODE` (`intent`/`condensed`/`verbose`/`both`) surface | `agent-utilities` (inherited) |
 
 > 📖 **Full Registry**: See [`agent-utilities/docs/overview.md`](https://github.com/Knuckles-Team/agent-utilities/blob/main/docs/overview.md) for the complete 5-Pillar concept index.

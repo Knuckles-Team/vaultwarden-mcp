@@ -15,10 +15,6 @@
     rdfs:label "Vaultwarden Server" ;
     rdfs:comment "A Bitwarden-compatible server instance." .
 
-:VaultwardenAccount a owl:Class ;
-    rdfs:label "Vaultwarden Account" ;
-    rdfs:comment "A user account on a Vaultwarden server, identified opaquely." .
-
 :VaultwardenItem a owl:Class ;
     rdfs:label "Vaultwarden Item" ;
     rdfs:comment "A vault item (cipher). Only its identity, type, and lifecycle metadata are modelled." .
@@ -54,18 +50,6 @@
     rdfs:label "Vaultwarden Collection" ;
     rdfs:comment "An organization collection. Its name is encrypted and never modelled." .
 
-:VaultwardenSend a owl:Class ;
-    rdfs:label "Vaultwarden Send" ;
-    rdfs:comment "A time-limited shared text or file. Contents are never modelled." .
-
-:VaultwardenDevice a owl:Class ;
-    rdfs:label "Vaultwarden Device" .
-
-:vaultwardenOwnedBy a owl:ObjectProperty ;
-    rdfs:label "owned by" ;
-    rdfs:domain :VaultwardenItem ;
-    rdfs:range :VaultwardenAccount .
-
 :vaultwardenInFolder a owl:ObjectProperty ;
     rdfs:label "in folder" ;
     rdfs:domain :VaultwardenItem ;
@@ -85,11 +69,6 @@
     rdfs:label "collection of" ;
     rdfs:domain :VaultwardenCollection ;
     rdfs:range :VaultwardenOrganization .
-
-:vaultwardenHostedOn a owl:ObjectProperty ;
-    rdfs:label "hosted on" ;
-    rdfs:domain :VaultwardenAccount ;
-    rdfs:range :VaultwardenServer .
 
 :vaultwardenItemType a owl:DatatypeProperty ;
     rdfs:label "item type" ;
@@ -137,17 +116,6 @@
     rdfs:label "web vault version" ;
     rdfs:domain :VaultwardenServer ;
     rdfs:range xsd:string .
-
-:vaultwardenSendType a owl:DatatypeProperty ;
-    rdfs:label "send type" ;
-    rdfs:comment "0 text, 1 file." ;
-    rdfs:domain :VaultwardenSend ;
-    rdfs:range xsd:integer .
-
-:vaultwardenDeviceType a owl:DatatypeProperty ;
-    rdfs:label "device type" ;
-    rdfs:domain :VaultwardenDevice ;
-    rdfs:range xsd:integer .
 
 <http://knuckles.team/kg/vaultwarden> a owl:Ontology ;
     rdfs:label "Vaultwarden Ontology" ;

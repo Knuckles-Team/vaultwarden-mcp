@@ -3,6 +3,6 @@
   "connector": "vaultwarden-mcp",
   "schema_version": "1",
   "tools": {
-    "vaultwarden_ciphers": "32378a28d056458c37fb0571e62a41064d051c98a0135ac10f5e2854a023aba9"
+    "vaultwarden_metadata": "0f091aeb0384fbc36a7d29e40b06d10d5a8afd77f0a47388e878886043014c6c"
   }
 }

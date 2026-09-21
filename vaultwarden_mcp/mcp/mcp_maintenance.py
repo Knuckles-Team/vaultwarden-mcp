@@ -1,4 +1,4 @@
-"""Vault maintenance MCP tool: deduplication, password rotation, KG ingestion."""
+"""Vault maintenance and certified metadata-source MCP tools."""
 
 import json
 from typing import Any
@@ -14,13 +14,13 @@ from ..vault.dedupe import DedupePlan, apply_plan, plan_deduplication
 from ..vault.rotation import generate_password, rotate_item_password
 from ._dispatch import SERVICE, parse_params
 
-_ACTIONS = {
+_MAINTENANCE_ACTIONS = {
     "plan_deduplication",
     "apply_deduplication",
     "rotate_password",
     "generate_password",
-    "ingest_metadata",
 }
+_METADATA_ACTIONS = {"metadata_snapshot", "backfeed_metadata"}
 
 
 async def _dedupe_plan(params: dict[str, Any]) -> DedupePlan:
@@ -63,47 +63,35 @@ async def _rotate_password(params: dict[str, Any]) -> dict:
     )
 
 
-async def _ingest_metadata(client: Any) -> dict:
+async def _metadata_snapshot(client: Any, params: dict[str, Any]) -> dict[str, Any]:
+    """Fetch once and project only the certified structural metadata."""
     from .. import kg_ingest
 
     sync = await run_blocking(client.sync_vault)
-    counts: dict[str, int] = {}
-
-    ciphers = sync.get("ciphers") or []
-    if ciphers:
-        result = await run_blocking(kg_ingest.ingest_items, ciphers)
-        counts["items"] = sum(result.values())
-
-    folder_ids = [f.get("id") for f in sync.get("folders") or [] if f.get("id")]
-    if folder_ids:
-        result = await run_blocking(kg_ingest.ingest_folders, folder_ids)
-        counts["folders"] = sum(result.values())
-
-    collections = sync.get("collections") or []
-    if collections:
-        result = await run_blocking(kg_ingest.ingest_collections, collections)
-        counts["collections"] = sum(result.values())
-
+    if not isinstance(sync, dict):
+        raise ValueError("Vaultwarden sync returned a malformed response")
     config = await run_blocking(client.server_config)
-    if config:
-        version = await run_blocking(client.server_version)
-        result = await run_blocking(
-            kg_ingest.ingest_server, config, server_version=version
-        )
-        counts["server"] = sum(result.values())
-
-    return {"synced": True, "counts": counts}
+    version = await run_blocking(client.server_version) if config else None
+    return kg_ingest.build_metadata_snapshot(
+        items=sync.get("ciphers") or [],
+        folders=sync.get("folders") or [],
+        collections=sync.get("collections") or [],
+        config=config,
+        server_version=version,
+        mode=str(params.get("mode") or "delta"),
+        checkpoint=params.get("checkpoint"),
+    )
 
 
 def register_maintenance_tools(mcp: FastMCP):
-    """Register the vault-maintenance tool."""
+    """Register disjoint mutation and read-only metadata tools."""
 
     @mcp.tool(tags={"maintenance"})
     async def vaultwarden_maintenance(
         action: str = Field(
             description=(
                 "One of 'plan_deduplication', 'apply_deduplication', "
-                "'rotate_password', 'generate_password', 'ingest_metadata'."
+                "'rotate_password', or 'generate_password'."
             )
         ),
         params_json: str = Field(
@@ -114,13 +102,11 @@ def register_maintenance_tools(mcp: FastMCP):
             default=None, description="MCP context for progress reporting"
         ),
     ) -> dict:
-        """Plan/apply vault deduplication, rotate item passwords, generate
-        passwords, and sync vault metadata into the knowledge graph.
+        """Plan/apply vault deduplication and rotate or generate passwords.
 
-        Deduplication and rotation results carry item ids and counts only —
-        never item names, usernames, or passwords. ``apply_deduplication``
-        and ``rotate_password`` both require ``confirm: true``; a loose
-        deduplication plan is always refused for ``apply_deduplication``.
+        Deduplication and rotation results carry item ids and counts only.
+        Applying deduplication or rotating a password requires confirm: true,
+        and a loose deduplication plan is never applied automatically.
 
         CONCEPT:VW-ECO.mcp.maintenance-operations
         """
@@ -131,7 +117,7 @@ def register_maintenance_tools(mcp: FastMCP):
         except (json.JSONDecodeError, ValueError) as exc:
             return {"error": f"Invalid params_json: {type(exc).__name__}"}
 
-        resolved = resolve_action(action, _ACTIONS, service=SERVICE)
+        resolved = resolve_action(action, _MAINTENANCE_ACTIONS, service=SERVICE)
         if isinstance(resolved, dict):
             return resolved
         if resolved == "plan_deduplication":
@@ -145,4 +131,43 @@ def register_maintenance_tools(mcp: FastMCP):
             length = int(params.get("length", 24))
             use_symbols = bool(params.get("use_symbols", True))
             return {"password": generate_password(length, use_symbols)}
-        return await _ingest_metadata(client)
+        raise AssertionError("unreachable")
+
+    @mcp.tool(tags={"metadata", "read-only"})
+    async def vaultwarden_metadata(
+        action: str = Field(
+            description="One of 'metadata_snapshot' or 'backfeed_metadata'."
+        ),
+        params_json: str = Field(
+            default="{}", description="JSON object of metadata-source parameters."
+        ),
+        client=Depends(get_client),
+        ctx: Context | None = Field(
+            default=None, description="MCP context for progress reporting"
+        ),
+    ) -> dict:
+        """Serve the certified metadata-only source projection.
+
+        metadata_snapshot returns opaque identifiers, type codes, lifecycle
+        timestamps, counts, and typed relationships. Agent Utilities source_sync
+        is the only graph commit/checkpoint/reconcile authority. Backfeed is
+        explicitly unsupported.
+
+        CONCEPT:VW-KG.ingest.metadata-only
+        """
+        if ctx:
+            await ctx.info(f"vaultwarden_metadata action={action}")
+        try:
+            params = parse_params(params_json)
+        except (json.JSONDecodeError, ValueError) as exc:
+            return {"error": f"Invalid params_json: {type(exc).__name__}"}
+
+        resolved = resolve_action(action, _METADATA_ACTIONS, service=SERVICE)
+        if isinstance(resolved, dict):
+            return resolved
+        if resolved == "metadata_snapshot":
+            return await _metadata_snapshot(client, params)
+        from .. import kg_ingest
+
+        kg_ingest.refuse_backfeed()
+        raise AssertionError("unreachable")

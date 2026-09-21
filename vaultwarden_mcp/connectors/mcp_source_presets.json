@@ -1,12 +1,42 @@
 {
-  "_comment": "Tier-1 mcp_tool source preset(s) (AU-KG.ingest.mcp-tool-connector). Contributed presets win over the central MCP_TOOL_PRESETS.",
-  "vaultwarden-ciphers": {
+  "_comment": "Strict metadata/entity source contract for Vaultwarden. Generic document ingestion is intentionally refused because every document body field could contain vault content. Agent Utilities must register this preset as a typed-entity delta/reconcile source.",
+  "vaultwarden-metadata": {
     "server": "vaultwarden-mcp",
-    "tool": "vaultwarden_ciphers",
-    "action": "sync",
-    "records_path": "ciphers",
+    "tool": "vaultwarden_metadata",
+    "action": "metadata_snapshot",
+    "params_style": "json",
+    "params": {
+      "mode": "delta"
+    },
+    "record_mode": "typed_entities",
+    "records_path": "entities",
+    "relationships_path": "relationships",
     "id_field": "id",
-    "updated_field": "revisionDate",
-    "doc_type": "vaultwarden_cipher"
+    "node_type_field": "node_type",
+    "updated_field": "vaultwardenRevisionDate",
+    "updated_since_param": "checkpoint",
+    "checkpoint_path": "checkpoint",
+    "reconcile_path": "reconcile.live_ids",
+    "authoritative_path": "reconcile.authoritative",
+    "strict_schema": true,
+    "content_fields": [],
+    "metadata_fields": [
+      "id",
+      "node_type",
+      "externalToolId",
+      "vaultwardenItemType",
+      "vaultwardenRevisionDate",
+      "vaultwardenCreationDate",
+      "vaultwardenDeletedDate",
+      "vaultwardenAttachmentCount",
+      "vaultwardenReprompt",
+      "vaultwardenHasPasskey",
+      "vaultwardenWebVaultVersion",
+      "vaultwardenServerVersion"
+    ],
+    "text_field": "__metadata_entity_has_no_document_text__",
+    "doc_type": "vaultwarden_metadata",
+    "read_only": true,
+    "backfeed_supported": false
   }
 }

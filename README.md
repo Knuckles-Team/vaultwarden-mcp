@@ -198,15 +198,17 @@ Both backends produce and accept records in the Bitwarden CLI JSON shape, so
 `vaultwarden_mcp/vault/dedupe.py` (exact or loose duplicate matching, keep-newest
 selection, bulk soft-delete apply) behaves identically regardless of backend.
 
-`vaultwarden_mcp/kg_ingest.py` maps vault entities to typed OWL nodes
+`vaultwarden_mcp/kg_ingest.py` projects vault entities as typed OWL nodes
 (`:VaultwardenItem` subclasses, `:VaultwardenFolder`, `:VaultwardenCollection`,
 `:VaultwardenServer`) and relationships (`:vaultwardenInFolder`,
-`:vaultwardenInOrganization`, `:vaultwardenInCollection`) through the required
-`agent_utilities.knowledge_graph.memory.native_ingest` (Wire-First) primitive. Only
+`:vaultwardenInOrganization`, `:vaultwardenInCollection`) through the certified
+`vaultwarden-metadata` source preset. Agent Utilities `source_sync` is the sole
+graph commit, checkpoint, and reconcile authority. Only
 identifiers, type codes, lifecycle dates, counts, and relationships are accepted — every
 item name, username, password, note, URI, TOTP seed, custom field, attachment, folder
 name, collection name, send content, and key is rejected before it ever reaches the graph
-(`vaultwarden_mcp/ontology/vaultwarden.ttl`).
+(`vaultwarden_mcp/ontology/vaultwarden.ttl`). See
+[`docs/ingestion.md`](docs/ingestion.md) for the exact envelope and lifecycle.
 
 ## MCP
 
@@ -451,7 +453,8 @@ domains can be toggled on or off with the listed environment variable. The table
 | `vaultwarden_admin` | `ADMINTOOL` | Administer the instance (users, config, diagnostics), plus |
 | `vaultwarden_ciphers` | `CIPHERSTOOL` | Read and write vault items (ciphers). |
 | `vaultwarden_folders` | `FOLDERSTOOL` | Read and write personal-vault folders. |
-| `vaultwarden_maintenance` | `MAINTENANCETOOL` | Plan/apply vault deduplication, rotate item passwords, generate |
+| `vaultwarden_maintenance` | `MAINTENANCETOOL` | Plan/apply vault deduplication and rotate or generate passwords. |
+| `vaultwarden_metadata` | `MAINTENANCETOOL` | Serve the certified metadata-only source projection. |
 | `vaultwarden_organizations` | `ORGANIZATIONSTOOL` | Manage organizations, collections, members, groups, and policies, |
 | `vaultwarden_sends` | `SENDSTOOL` | Create, list, update, and remove Bitwarden Sends (text or file). |
 | `vaultwarden_system` | `SYSTEMTOOL` | Read Vaultwarden server liveness, version, and public configuration. |
@@ -747,7 +750,7 @@ domains can be toggled on or off with the listed environment variable. The table
 
 </details>
 
-_8 action-routed tool(s) · 281 verbose 1:1 tool(s). Each is enabled unless its `<DOMAIN>TOOL` toggle is set false; `MCP_TOOL_MODE` selects the surface (**`intent` default** — the six verb-tools, granular set loaded on demand · `condensed` action-routed · `verbose` 1:1 · `both`). Auto-generated — do not edit._
+_9 action-routed tool(s) · 281 verbose 1:1 tool(s). Each is enabled unless its `<DOMAIN>TOOL` toggle is set false; `MCP_TOOL_MODE` selects the surface (**`intent` default** — the six verb-tools, granular set loaded on demand · `condensed` action-routed · `verbose` 1:1 · `both`). Auto-generated — do not edit._
 <!-- MCP-TOOLS-TABLE:END -->
 
 The tool domains this package registers (final names, once every domain module lands):
@@ -764,6 +767,7 @@ Full documentation is published to the GitHub Pages site and mirrored under `doc
 - [Installation](docs/installation.md)
 - [Usage](docs/usage.md)
 - [Deployment](docs/deployment.md)
+- [Metadata Ingestion](docs/ingestion.md)
 - [Platform](docs/platform.md)
 - [Concept Registry](docs/concepts.md)
 

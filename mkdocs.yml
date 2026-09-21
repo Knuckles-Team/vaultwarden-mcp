@@ -90,5 +90,6 @@ nav:
   - Installation: installation.md
   - Deployment: deployment.md
   - Usage (API / CLI / MCP): usage.md
+  - Metadata Ingestion: ingestion.md
   - Backing Platform (Vaultwarden): platform.md
   - Concepts: concepts.md
