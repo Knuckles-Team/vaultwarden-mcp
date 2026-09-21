@@ -7,11 +7,12 @@
         "id": "fixture-record",
         "title": "Synthetic certification record"
       },
-      "preset": "vaultwarden-ciphers",
+      "preset": "vaultwarden-metadata",
       "record": {
+        "__metadata_entity_has_no_document_text__": "Synthetic content used only for contract validation.",
         "acl_public": false,
         "id": "fixture-record",
-        "revisionDate": "2000-01-01T00:00:00Z"
+        "vaultwardenRevisionDate": "2000-01-01T00:00:00Z"
       }
     }
   ],

@@ -1,14 +1,14 @@
 {
   "api_version": "graphos.io/v1",
   "artifacts": {
-    "connector_manifest.yml": "64354cb910f95be7d0b84a37df77c8a249f15cbf102cb1cd16488215b3e42f43",
-    "vaultwarden_mcp/connectors/mcp_source_presets.json": "dd181ffe9bfda0cdc1405668234b17c6d6fb67064fab8810fc31b7d1aefd3125",
-    "vaultwarden_mcp/connectors/tool_schema_fingerprints.json": "464af4ca22dd74e708818df6593a6bd5b2ad0de84e7a2d4a3663efa3daf533f9",
-    "vaultwarden_mcp/ontology/fixtures/records.json": "6ef191f06381df50269f200baa351c49b13ff3a13c0f913cc2dc57c487a35414",
-    "vaultwarden_mcp/ontology/mappings/source.yaml": "21f38aa8b5f5caf9da372419e6ece639123fb5e3e90433e81e40a8a6127aaf4a",
+    "connector_manifest.yml": "38ec14f588210d0984128535dfb193c6501402a0c9e389949b92a5e803a6a5a9",
+    "vaultwarden_mcp/connectors/mcp_source_presets.json": "1226a2bc24b9df5efa963de9079cbc6f3e7f6dac6bb6036bd4222d92e38d2b4c",
+    "vaultwarden_mcp/connectors/tool_schema_fingerprints.json": "291bd23e060bf2d21a066df5d739f4da37de365ecd63e8f2efdf4df15060197f",
+    "vaultwarden_mcp/ontology/fixtures/records.json": "3cbfa61cbccf1321136836121621078b03e15fe933a11d5c3ef535eec3539924",
+    "vaultwarden_mcp/ontology/mappings/source.yaml": "2b33428e5b3fb6e8203bcc9e5e48777ffa674ed19d3f5e3a09169becd573a34b",
     "vaultwarden_mcp/ontology/migrations/manifest.json": "023b713d459e4c14274b468b1bece315970f23230882e9b2859563e5e6d444dd",
-    "vaultwarden_mcp/ontology/shapes/connector.shacl.ttl": "8d91a2717dd0902eebcc1b8b382af3ab08846b07dfe09d186a17d475a05338c9",
-    "vaultwarden_mcp/ontology/vaultwarden.ttl": "fd9b1650758b66d1c5fa7debb55f8264bcafd1586612d0bd4f3058438d4c12b9"
+    "vaultwarden_mcp/ontology/shapes/connector.shacl.ttl": "23e54c6c563ce5b1cdd13c4dc6746079e45d28fd64360122739ad10eda535336",
+    "vaultwarden_mcp/ontology/vaultwarden.ttl": "4fa0b5f53d8c1b285c4d8de639bef775c6ba8089c75f47de5ff9473ce47dce21"
   },
   "checks": {
     "declared_tool_schema": "passed",
@@ -32,5 +32,5 @@
   "signer": "UNSIGNED-PREVIEW",
   "signing_public_key": "",
   "status": "source-validated",
-  "validated_at": "2026-09-14T18:46:34Z"
+  "validated_at": "2026-09-21T18:35:00Z"
 }

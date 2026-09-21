@@ -3,26 +3,6 @@
 @prefix sh: <http://www.w3.org/ns/shacl#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-shape:VaultwardenAccountGovernanceShape a sh:NodeShape ;
-    sh:targetClass :VaultwardenAccount ;
-    sh:closed false ;
-    sh:property [
-        sh:path :sourceRecordRef ;
-        sh:minCount 1 ; sh:maxCount 1 ; sh:datatype xsd:string
-    ] ;
-    sh:property [
-        sh:path :tenantReference ;
-        sh:minCount 1 ; sh:maxCount 1 ; sh:datatype xsd:string
-    ] ;
-    sh:property [
-        sh:path :accessPolicyReference ;
-        sh:minCount 1 ; sh:maxCount 1 ; sh:datatype xsd:string
-    ] ;
-    sh:property [
-        sh:path :provenanceReference ;
-        sh:minCount 1 ; sh:maxCount 1 ; sh:datatype xsd:string
-    ] .
-
 shape:VaultwardenCardItemGovernanceShape a sh:NodeShape ;
     sh:targetClass :VaultwardenCardItem ;
     sh:closed false ;
@@ -45,26 +25,6 @@ shape:VaultwardenCardItemGovernanceShape a sh:NodeShape ;
 
 shape:VaultwardenCollectionGovernanceShape a sh:NodeShape ;
     sh:targetClass :VaultwardenCollection ;
-    sh:closed false ;
-    sh:property [
-        sh:path :sourceRecordRef ;
-        sh:minCount 1 ; sh:maxCount 1 ; sh:datatype xsd:string
-    ] ;
-    sh:property [
-        sh:path :tenantReference ;
-        sh:minCount 1 ; sh:maxCount 1 ; sh:datatype xsd:string
-    ] ;
-    sh:property [
-        sh:path :accessPolicyReference ;
-        sh:minCount 1 ; sh:maxCount 1 ; sh:datatype xsd:string
-    ] ;
-    sh:property [
-        sh:path :provenanceReference ;
-        sh:minCount 1 ; sh:maxCount 1 ; sh:datatype xsd:string
-    ] .
-
-shape:VaultwardenDeviceGovernanceShape a sh:NodeShape ;
-    sh:targetClass :VaultwardenDevice ;
     sh:closed false ;
     sh:property [
         sh:path :sourceRecordRef ;
@@ -185,26 +145,6 @@ shape:VaultwardenOrganizationGovernanceShape a sh:NodeShape ;
 
 shape:VaultwardenSecureNoteItemGovernanceShape a sh:NodeShape ;
     sh:targetClass :VaultwardenSecureNoteItem ;
-    sh:closed false ;
-    sh:property [
-        sh:path :sourceRecordRef ;
-        sh:minCount 1 ; sh:maxCount 1 ; sh:datatype xsd:string
-    ] ;
-    sh:property [
-        sh:path :tenantReference ;
-        sh:minCount 1 ; sh:maxCount 1 ; sh:datatype xsd:string
-    ] ;
-    sh:property [
-        sh:path :accessPolicyReference ;
-        sh:minCount 1 ; sh:maxCount 1 ; sh:datatype xsd:string
-    ] ;
-    sh:property [
-        sh:path :provenanceReference ;
-        sh:minCount 1 ; sh:maxCount 1 ; sh:datatype xsd:string
-    ] .
-
-shape:VaultwardenSendGovernanceShape a sh:NodeShape ;
-    sh:targetClass :VaultwardenSend ;
     sh:closed false ;
     sh:property [
         sh:path :sourceRecordRef ;

@@ -2,17 +2,17 @@ schema_version: '1'
 connector: vaultwarden-mcp
 ontology_source: vaultwarden
 sync:
-- preset: vaultwarden-ciphers
+- preset: vaultwarden-metadata
   server: vaultwarden-mcp
-  tool: vaultwarden_ciphers
-  action: sync
-  records_path: ciphers
+  tool: vaultwarden_metadata
+  action: metadata_snapshot
+  records_path: entities
   id_field: id
   title_field: null
-  text_field: null
-  updated_field: revisionDate
-  doc_type: vaultwarden_cipher
-  tool_schema_sha256: 32378a28d056458c37fb0571e62a41064d051c98a0135ac10f5e2854a023aba9
+  text_field: __metadata_entity_has_no_document_text__
+  updated_field: vaultwardenRevisionDate
+  doc_type: vaultwarden_metadata
+  tool_schema_sha256: 0f091aeb0384fbc36a7d29e40b06d10d5a8afd77f0a47388e878886043014c6c
 governance:
   default_acl: quarantine
   identity: opaque-reference
