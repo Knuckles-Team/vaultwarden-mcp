@@ -180,7 +180,7 @@ sync:
   updated_field: vaultwardenRevisionDate
   pagination: null
   doc_type: vaultwarden_metadata
-  tool_schema_sha256: 0f091aeb0384fbc36a7d29e40b06d10d5a8afd77f0a47388e878886043014c6c
+  tool_schema_sha256: e3b782d9333a35371f35b7a1a4115d7d0c78f4aa139ffd80e6b5a071a77f4c37
   raw:
     server: vaultwarden-mcp
     tool: vaultwarden_metadata

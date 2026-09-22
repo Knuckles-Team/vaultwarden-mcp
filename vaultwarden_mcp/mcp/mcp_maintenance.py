@@ -1,7 +1,7 @@
 """Vault maintenance and certified metadata-source MCP tools."""
 
 import json
-from typing import Any
+from typing import Any, Literal
 
 from agent_utilities.mcp.action_dispatch import resolve_action
 from agent_utilities.mcp.concurrency import run_blocking
@@ -135,7 +135,7 @@ def register_maintenance_tools(mcp: FastMCP):
 
     @mcp.tool(tags={"metadata", "read-only"})
     async def vaultwarden_metadata(
-        action: str = Field(
+        action: Literal["backfeed_metadata", "metadata_snapshot"] = Field(
             description="One of 'metadata_snapshot' or 'backfeed_metadata'."
         ),
         params_json: str = Field(
