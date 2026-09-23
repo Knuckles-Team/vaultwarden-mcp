@@ -133,7 +133,18 @@ def register_maintenance_tools(mcp: FastMCP):
             return {"password": generate_password(length, use_symbols)}
         raise AssertionError("unreachable")
 
-    @mcp.tool(tags={"metadata", "read-only"})
+    @mcp.tool(
+        tags={"metadata", "read-only"},
+        annotations={
+            "readOnlyHint": True,
+            "destructiveHint": False,
+            "idempotentHint": True,
+            "openWorldHint": True,
+        },
+        meta={
+            "eg.annotations": {"modalities_in": ["text"], "modalities_out": ["text"]}
+        },
+    )
     async def vaultwarden_metadata(
         action: Literal["backfeed_metadata", "metadata_snapshot"] = Field(
             description="One of 'metadata_snapshot' or 'backfeed_metadata'."
