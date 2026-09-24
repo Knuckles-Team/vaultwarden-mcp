@@ -222,7 +222,7 @@ class VaultwardenApiOperationsBase:
     """Dispatch a :data:`~vaultwarden_mcp.api._routes.ROUTES` operation by name.
 
     Never an API operation itself (its name ends in ``Base``, so
-    ``agent_utilities.mcp.verbose_tools._domain_methods`` — and therefore the
+    ``agent_connector_sdk.mcp.verbose_naming.domain_methods`` — and therefore the
     verbose MCP tool surface — never expands it).
     """
 

@@ -1,7 +1,7 @@
 """Normalized MCP operation manifest, derived from :data:`~vaultwarden_mcp.api
 ._routes.ROUTES` at import time.
 
-Consumed by ``agent_utilities.mcp.verbose_tools.register_verbose_tools`` (the
+Consumed by ``agent_connector_sdk.mcp.verbose_tools.register_verbose_tools`` (the
 ``manifest=`` argument) to synthesize a fully-typed verbose MCP tool per
 operation instead of falling back to the generic ``params_json`` tool.
 """

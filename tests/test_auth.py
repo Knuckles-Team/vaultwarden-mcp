@@ -28,7 +28,8 @@ def _runtime(**credentials):
 
 def _no_delegation():
     return patch(
-        "agent_utilities.mcp.delegated_auth.is_delegation_enabled", return_value=False
+        "agent_connector_sdk.auth.delegation.DelegationSettings.from_settings",
+        return_value=MagicMock(enabled=False),
     )
 
 

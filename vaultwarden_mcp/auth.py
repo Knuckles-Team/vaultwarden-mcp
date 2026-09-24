@@ -16,9 +16,15 @@ references resolved only at runtime.
 
 from typing import Any
 
-from agent_utilities.base_utilities import get_logger
+from agent_connector_sdk.exceptions import AuthError, UnauthorizedError
+from agent_connector_sdk.utilities import get_logger
+
+# SDK-GAP (see /var/tmp/l9/finish/au-decon-G4e/SDK-GAPS.md, EH-484): AU's provider-
+# runtime abstraction (AgentConfig.provider_configs.<name>: endpoint/tls/credential/
+# selector references resolved as one profile) has no agent_connector_sdk
+# equivalent -- the SDK's config.py is a flat env-var setting()/load_config() model
+# with no AgentConfig class. Kept as an exact AU import.
 from agent_utilities.core import config as config_module
-from agent_utilities.core.exceptions import AuthError, UnauthorizedError
 from agent_utilities.core.provider_runtime import (
     ResolvedProviderRuntime,
     resolve_provider_runtime_profile,
@@ -56,23 +62,43 @@ def get_client(config: config_module.AgentConfig | None = None) -> VaultwardenAp
         runtime.close()
         raise RuntimeError("Provider profile requires endpoint and TLS references")
 
-    from agent_utilities.mcp.delegated_auth import (
-        get_delegated_token,
-        get_user_identity,
-        is_delegation_enabled,
-    )
-
     # --- Path 1: OIDC Delegation (RFC 8693 Token Exchange) ---
-    if is_delegation_enabled():
+    # agent_connector_sdk.auth.delegation.DelegationSettings always reads live env
+    # settings (like AU's is_delegation_enabled(config=None) fallback path); unlike
+    # AU's get_delegated_token (which took an explicit audience=runtime.endpoint
+    # override), the SDK requires AUDIENCE to be set whenever delegation is
+    # enabled and fails closed (ValueError) otherwise -- a stricter, intentional
+    # contract, not silently reproduced here.
+    try:
+        import httpx
+        from agent_connector_sdk.auth.delegation import (
+            DelegationSettings,
+            current_user_token,
+            exchange_token,
+        )
+
+        delegation_settings = DelegationSettings.from_settings()
+        delegation_enabled = delegation_settings.enabled
+    except Exception:
+        delegation_enabled = False
+
+    if delegation_enabled:
         try:
-            delegated_token = get_delegated_token(audience=runtime.endpoint)
-            get_user_identity()
+            subject_token = current_user_token()
+            if not subject_token:
+                raise RuntimeError("no verified caller token is available")
+            with httpx.Client(timeout=30) as exchange_client:
+                delegated_token = exchange_token(
+                    delegation_settings,
+                    subject_token=subject_token,
+                    http_client=exchange_client,
+                )
             logger.info("Using OIDC delegated token")
             _client = VaultwardenApi(
                 base_url=runtime.endpoint,
                 tls_profile=runtime.tls,
                 credentials=_credentials(runtime),
-                token=delegated_token,
+                token=delegated_token.value,
             )
             _provider_runtime = runtime
             return _client

@@ -3,7 +3,7 @@
 Exercises the ``ROUTES`` catalog (``_routes.py``), the generated domain
 mixins + dispatch (``api_client_operations.py``), the derived MCP manifest
 (``_operation_manifest.py``), and their wiring into the fleet's verbose
-1:1 MCP tool surface (``agent_utilities.mcp.verbose_tools``).
+1:1 MCP tool surface (``agent_connector_sdk.mcp.verbose_naming``).
 """
 
 from __future__ import annotations
@@ -13,7 +13,7 @@ from typing import Any
 from unittest.mock import MagicMock
 
 import pytest
-from agent_utilities.mcp.verbose_tools import _domain_methods
+from agent_connector_sdk.mcp.verbose_naming import domain_methods
 
 from vaultwarden_mcp.api._operation_manifest import OPERATIONS, OPERATIONS_BY_NAME
 from vaultwarden_mcp.api._routes import ROUTES, Route
@@ -74,7 +74,7 @@ def test_every_route_yields_exactly_one_method_on_the_client():
     for route in ROUTES:
         assert hasattr(VaultwardenApi, route.name), f"missing method for {route.name}"
     # And nothing extra: every generated callable maps back to a route.
-    generated = _domain_methods(VaultwardenApi)
+    generated = domain_methods(VaultwardenApi)
     assert set(generated) == {route.name for route in ROUTES}
 
 
@@ -212,7 +212,7 @@ def test_every_manifest_operation_exists_on_the_client():
 
 
 def test_domain_methods_includes_generated_operations_and_excludes_base():
-    methods = _domain_methods(VaultwardenApi)
+    methods = domain_methods(VaultwardenApi)
     assert "get_cipher" in methods
     assert "delete_cipher_selected_put" in methods
     for excluded in ("request", "call_operation", "sync_vault", "soft_delete_ciphers"):
@@ -239,6 +239,6 @@ def test_call_operation_rejects_unknown_names():
 
 
 def test_operations_base_class_name_ends_in_base():
-    # So agent_utilities.mcp.verbose_tools treats it as base infrastructure,
+    # So agent_connector_sdk.mcp.verbose_naming treats it as base infrastructure,
     # never a generated verbose tool.
     assert VaultwardenApiOperationsBase.__name__.endswith("Base")

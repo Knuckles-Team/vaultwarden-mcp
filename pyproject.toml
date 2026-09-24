@@ -9,8 +9,15 @@ description = "Vaultwarden API + Bitwarden vault MCP Server and A2A Agent for Ag
 readme = "README.md"
 classifiers = [ "Development Status :: 4 - Beta", "License :: OSI Approved :: MIT License", "Environment :: Console", "Operating System :: POSIX :: Linux", "Programming Language :: Python :: 3",]
 requires-python = ">=3.12, <3.15"
+# NOTE (EH-484 policy update, see /var/tmp/l9/finish/au-decon-G4e/SDK-GAPS.md):
+# agent-utilities is kept for three modules with no agent_connector_sdk
+# equivalent (auth.py's provider_runtime/AgentConfig, api/api_client_base.py's
+# http_client+transport_security pairing, error_authority.py's
+# persistence_privacy) -- no fail-closed stub, no vendored shim. Drop
+# agent-utilities once those land.
 dependencies = [
-    "agent-utilities[mcp]>=2.0.0,<3.0.0",
+    "agent-connector-sdk>=0.1.0,<1.0.0",
+    "agent-utilities>=2.0.0,<3.0.0",
     "argon2-cffi>=25.1.0,<26.0.0",
     "cryptography>=50.0.1,<51.0.0",
 ]
@@ -21,17 +28,11 @@ name = "Repository Maintainers"
 text = "MIT"
 
 [project.optional-dependencies]
-mcp = [ "agent-utilities[mcp]>=2.0.0,<3.0.0",]
-agent = [ "agent-utilities[agent-runtime,logfire]>=2.0.0,<3.0.0",]
-all = [
-    "agent-utilities[mcp,agent-runtime,logfire]>=2.0.0,<3.0.0",
-]
 test = [
     "pytest-xdist>=3.6.0", "pytest", "pytest-asyncio", "pytest-cov",]
 
 [project.scripts]
 vaultwarden-mcp = "vaultwarden_mcp.mcp_server:mcp_server"
-vaultwarden-agent = "vaultwarden_mcp.agent_server:agent_server"
 
 # Fleet contribution (CONCEPT:AU-KG.ontology.federation-provider-leg): advertise this
 # package's skills, prompts, OWL/RDF ontology, and source-connector presets so
@@ -69,6 +70,7 @@ override-dependencies = [
 ]
 
 [tool.uv.sources]
+agent-connector-sdk = { path = ".uv-workspace-siblings/agent-connector-sdk", editable = true }
 agent-utilities = { path = ".uv-workspace-siblings/agent-utilities", editable = true }
 
 [tool.setuptools]

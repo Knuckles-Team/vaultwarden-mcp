@@ -18,6 +18,9 @@ from collections.abc import Mapping
 from dataclasses import dataclass
 from typing import Any
 
+# SDK-GAP (see /var/tmp/l9/finish/au-decon-G4e/SDK-GAPS.md, EH-484): AU's
+# PII/secret-redaction guard has no agent_connector_sdk equivalent. Kept as an
+# exact AU import (see the same gap recorded for tunnel-manager).
 from agent_utilities.security.persistence_privacy import sanitize_for_persistence
 
 PROBLEM_JSON_MEDIA_TYPE = "application/problem+json"

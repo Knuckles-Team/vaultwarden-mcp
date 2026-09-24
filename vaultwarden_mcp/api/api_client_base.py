@@ -23,6 +23,15 @@ from dataclasses import dataclass
 from typing import Any, Literal
 from urllib.parse import SplitResult, urljoin, urlsplit
 
+# SDK-GAP (see /var/tmp/l9/finish/au-decon-G4e/SDK-GAPS.md, EH-484):
+# agent_connector_sdk.http.client.create_http_client takes a base_url-scoped
+# HttpClientOptions with no pin_egress/allowed_private_hosts/allow_loopback
+# fields at all -- this connector relies on those to reach a typically
+# self-hosted (often private-network/loopback) Vaultwarden instance, so the SDK
+# version is not a safe drop-in. ResolvedTLSProfile stays paired with it (the
+# same object flows in from provider_runtime.resolve_provider_runtime_profile,
+# also AU -- see auth.py); mixing in agent_connector_sdk's separate
+# ResolvedTLSProfile class here would be a real type mismatch, not a rename.
 from agent_utilities.core.http_client import create_http_client
 from agent_utilities.core.transport_security import ResolvedTLSProfile
 
