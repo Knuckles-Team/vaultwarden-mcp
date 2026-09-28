@@ -10,13 +10,13 @@
       
       
       
-        <link rel="canonical" href="https://knuckles-team.github.io/vaultwarden-mcp/overview/">
+        <link rel="canonical" href="https://knuckles-team.github.io/vaultwarden-mcp/ingestion/">
       
       
-        <link rel="prev" href="..">
+        <link rel="prev" href="../usage/">
       
       
-        <link rel="next" href="../installation/">
+        <link rel="next" href="../platform/">
       
       
         
@@ -27,7 +27,7 @@
     
     
       
-        <title>Overview - vaultwarden-mcp</title>
+        <title>Metadata Ingestion - vaultwarden-mcp</title>
       
     
     
@@ -78,7 +78,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#vaultwarden-mcp-concept-overview" class="md-skip">
+        <a href="#metadata-source-contract" class="md-skip">
           Skip to content
         </a>
       
@@ -114,7 +114,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Overview
+              Metadata Ingestion
             
           </span>
         </div>
@@ -253,11 +253,9 @@
   
   
   
-    
   
-  
-    <li class="md-tabs__item md-tabs__item--active">
-      <a href="./" class="md-tabs__link">
+    <li class="md-tabs__item">
+      <a href="../overview/" class="md-tabs__link">
         
   
   
@@ -331,9 +329,11 @@
   
   
   
+    
   
-    <li class="md-tabs__item">
-      <a href="../ingestion/" class="md-tabs__link">
+  
+    <li class="md-tabs__item md-tabs__item--active">
+      <a href="./" class="md-tabs__link">
         
   
   
@@ -466,37 +466,10 @@
       
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Overview
-  
-
-    
-  </span>
-  
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../overview/" class="md-nav__link">
         
   
   
@@ -512,59 +485,6 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#description" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Description
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#architecture" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Architecture
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#concept-registry" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Concept Registry
-      
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -654,10 +574,19 @@
       
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../ingestion/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   
@@ -673,6 +602,7 @@
   
 
       </a>
+      
     </li>
   
 
@@ -751,47 +681,6 @@
     
   
   
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#description" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Description
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#architecture" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Architecture
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#concept-registry" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Concept Registry
-      
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
 </nav>
                   </div>
                 </div>
@@ -810,93 +699,41 @@
   
 
 
-<h1 id="vaultwarden-mcp-concept-overview">vaultwarden-mcp — Concept Overview<a class="headerlink" href="#vaultwarden-mcp-concept-overview" title="Permanent link">&para;</a></h1>
-<blockquote>
-<p><strong>Category</strong>: Integration | <strong>Ecosystem Role</strong>: MCP Server + A2A Agent
-Built on <a href="https://github.com/Knuckles-Team/agent-utilities"><code>agent-utilities</code></a> — the unified AGI Harness.</p>
-</blockquote>
-<h2 id="description">Description<a class="headerlink" href="#description" title="Permanent link">&para;</a></h2>
-<p>Vaultwarden (Bitwarden-compatible) API client, Bitwarden CLI wrapper, and MCP Server +
-A2A Agent for Agentic AI!</p>
-<h2 id="architecture">Architecture<a class="headerlink" href="#architecture" title="Permanent link">&para;</a></h2>
-<p>This project follows the standardized agent-package pattern:</p>
-<ul>
-<li><strong>Modular Design</strong>: split into <code>api/</code> (HTTP transport, the 281-operation route
-  catalog, and the generated verbose-tool parameter manifest), <code>crypto/</code> (pluggable
-  decrypted-vault backends), <code>vault/</code> (deduplication), and <code>mcp/</code> (action-routed
-  tool modules) for cleaner organization.</li>
-<li><strong>Dynamic Tool Registration</strong>: nine action-routed dynamic tools — <code>system</code>,
-  <code>accounts</code>, <code>ciphers</code>, <code>folders</code>, <code>organizations</code>, <code>sends</code>, <code>admin</code>, <code>maintenance</code> —
-  plus the read-only <code>vaultwarden_metadata</code> source surface. Registration tags remain
-  strictly lowercase and togglable with a <code>*TOOL</code> environment flag. Setting
-  <code>MCP_TOOL_MODE=verbose</code> additionally exposes one fully-typed tool per API operation.</li>
-<li><strong>Two crypto backends behind one contract</strong>: <code>native</code> (pure-Python Bitwarden key
-  derivation and EncString handling) and <code>bw_cli</code> (delegates to an installed Bitwarden
-  CLI), both implementing the same <code>VaultCrypto</code> protocol so higher-level operations —
-  item read/write, deduplication — behave identically on either backend.</li>
-<li><strong>Metadata-only knowledge graph</strong>: <code>kg_ingest.py</code> builds the certified structural
-  projection consumed by Agent Utilities <code>source_sync</code>; it never writes independently
-  or emits item names, usernames, passwords, notes, URIs, or keys.</li>
-<li><strong>A2A Agent Server</strong>: a Pydantic-AI graph agent (console script <code>vaultwarden-agent</code>)
-  that calls the MCP tool surface and exposes an AG-UI web interface.</li>
-</ul>
-<h2 id="concept-registry">Concept Registry<a class="headerlink" href="#concept-registry" title="Permanent link">&para;</a></h2>
-<p>This project implements or inherits the following ecosystem concepts. See
-<a href="../concepts/">Concepts</a> for the full, code-derived registry.</p>
-<table>
-<thead>
-<tr>
-<th style="text-align: left;">Concept ID</th>
-<th style="text-align: left;">Description</th>
-<th style="text-align: left;">Source</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align: left;"><code>VW-ECO.mcp.system-operations</code></td>
-<td style="text-align: left;">Action-routed system tag (liveness, version, config)</td>
-<td style="text-align: left;"><code>vaultwarden-mcp</code></td>
-</tr>
-<tr>
-<td style="text-align: left;"><code>VW-OS.identity.provider-profile</code></td>
-<td style="text-align: left;">Reference-only <code>provider_configs.vaultwarden</code> profile, upper-case credential aliases</td>
-<td style="text-align: left;"><code>vaultwarden-mcp</code></td>
-</tr>
-<tr>
-<td style="text-align: left;"><code>VW-OS.crypto.native-vault-crypto</code></td>
-<td style="text-align: left;">Pure-Python Bitwarden key derivation and EncString handling</td>
-<td style="text-align: left;"><code>vaultwarden-mcp</code></td>
-</tr>
-<tr>
-<td style="text-align: left;"><code>VW-KG.ingest.metadata-only</code></td>
-<td style="text-align: left;">Vault contents never reach the knowledge graph</td>
-<td style="text-align: left;"><code>vaultwarden-mcp</code></td>
-</tr>
-<tr>
-<td style="text-align: left;"><code>VW-ECO.vault.deduplication</code></td>
-<td style="text-align: left;">Exact/loose duplicate planning and bulk soft-delete apply</td>
-<td style="text-align: left;"><code>vaultwarden-mcp</code></td>
-</tr>
-<tr>
-<td style="text-align: left;"><code>AU-KG.ontology.federation-provider-leg</code></td>
-<td style="text-align: left;">Ontology federation via the <code>agent_utilities.ontology_providers</code> entry point</td>
-<td style="text-align: left;"><code>agent-utilities</code> (inherited)</td>
-</tr>
-<tr>
-<td style="text-align: left;"><code>AU-KG.ingest.enterprise-source-extractor</code></td>
-<td style="text-align: left;">Source-sync validation and native commit authority for enterprise connectors</td>
-<td style="text-align: left;"><code>agent-utilities</code> (inherited)</td>
-</tr>
-<tr>
-<td style="text-align: left;"><code>AU-ECO.mcp.tool-mode-standardization</code></td>
-<td style="text-align: left;">Shared <code>MCP_TOOL_MODE</code> (<code>intent</code>/<code>condensed</code>/<code>verbose</code>/<code>both</code>) surface</td>
-<td style="text-align: left;"><code>agent-utilities</code> (inherited)</td>
-</tr>
-</tbody>
-</table>
-<blockquote>
-<p>📖 <strong>Full Registry</strong>: See <a href="https://github.com/Knuckles-Team/agent-utilities/blob/main/docs/overview.md"><code>agent-utilities/docs/overview.md</code></a> for the complete 5-Pillar concept index.</p>
-</blockquote>
+<h1 id="metadata-source-contract">Metadata source contract<a class="headerlink" href="#metadata-source-contract" title="Permanent link">&para;</a></h1>
+<p>Vaultwarden is a read-only structural source for the knowledge graph. Agent Utilities
+calls the certified <code>vaultwarden-metadata</code> preset, which invokes
+<code>vaultwarden_metadata(action="metadata_snapshot")</code> and receives a
+<code>vaultwarden.metadata-entities/v1</code> envelope.</p>
+<pre class="mermaid"><code>sequenceDiagram
+    participant AU as Agent Utilities source_sync
+    participant MCP as vaultwarden_metadata
+    participant VW as Vaultwarden API
+    participant EG as Epistemic Graph
+
+    AU-&gt;&gt;MCP: metadata_snapshot(mode, checkpoint)
+    MCP-&gt;&gt;VW: sync_vault + server metadata
+    VW--&gt;&gt;MCP: provider response
+    MCP--&gt;&gt;AU: typed entities, relationships, checkpoint, digest
+    AU-&gt;&gt;AU: validate manifest allowlists and reconcile semantics
+    AU-&gt;&gt;EG: one native graph-slice commit</code></pre>
+<p>The projection contains only opaque identifiers, type codes, lifecycle timestamps,
+counts, version strings, and declared relationships. It never contains document text,
+item or folder names, usernames, passwords, notes, URIs, TOTP values, custom fields,
+attachment contents, encrypted payloads, or key material.</p>
+<p>The preset declares <code>record_mode: typed_entities</code>, an empty <code>content_fields</code> list,
+and an explicit <code>metadata_fields</code> allowlist. Its deliberately nonexistent
+<code>text_field</code> makes a generic document adapter fail closed. The old
+<code>vaultwarden-ciphers</code> document preset and the connector-local graph-write functions
+no longer exist, so there is one source and one commit authority.</p>
+<p>Delta calls accept the last committed ISO-8601 checkpoint. Changed item nodes retain
+the locally resolved folder, organization, and collection closure required by their
+edges; an unchanged delta returns an empty, digest-bound structural no-op. Full calls
+return the complete projection. Reconcile calls additionally mark the sorted
+<code>live_ids</code> set as authoritative. Agent Utilities alone applies tombstones and
+advances the checkpoint.</p>
+<p>Backfeed is unsupported. The preset and response both declare read-only operation, and
+<code>backfeed_metadata</code> refuses before making any provider call. A future write-back
+contract would require a separately reviewed field allowlist and approval boundary.</p>
 
 
 
@@ -934,7 +771,7 @@ A2A Agent for Agentic AI!</p>
       <nav class="md-footer__inner md-grid" aria-label="Footer" >
         
           
-          <a href=".." class="md-footer__link md-footer__link--prev" aria-label="Previous: Home">
+          <a href="../usage/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Usage (API / CLI / MCP)">
             <div class="md-footer__button md-icon">
               
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
@@ -944,20 +781,20 @@ A2A Agent for Agentic AI!</p>
                 Previous
               </span>
               <div class="md-ellipsis">
-                Home
+                Usage (API / CLI / MCP)
               </div>
             </div>
           </a>
         
         
           
-          <a href="../installation/" class="md-footer__link md-footer__link--next" aria-label="Next: Installation">
+          <a href="../platform/" class="md-footer__link md-footer__link--next" aria-label="Next: Backing Platform (Vaultwarden)">
             <div class="md-footer__title">
               <span class="md-footer__direction">
                 Next
               </span>
               <div class="md-ellipsis">
-                Installation
+                Backing Platform (Vaultwarden)
               </div>
             </div>
             <div class="md-footer__button md-icon">

@@ -16,7 +16,7 @@
         <link rel="prev" href="../deployment/">
       
       
-        <link rel="next" href="../platform/">
+        <link rel="next" href="../ingestion/">
       
       
         
@@ -321,6 +321,25 @@
     
   
   Usage (API / CLI / MCP)
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../ingestion/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Metadata Ingestion
 
       </a>
     </li>
@@ -649,6 +668,33 @@
   
   
     <li class="md-nav__item">
+      <a href="../ingestion/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Metadata Ingestion
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../platform/" class="md-nav__link">
         
   
@@ -820,11 +866,13 @@ never written to configuration files — only references (<code>env://…</code>
 <code>vaultwarden_mcp.api._routes.ROUTES</code> by name — the same dispatch the <code>verbose</code>
 MCP tool surface and the action-routed domain tools use internally.</p>
 <h2 id="as-an-mcp-server">As an MCP server<a class="headerlink" href="#as-an-mcp-server" title="Permanent link">&para;</a></h2>
-<p>Once <a href="../deployment/">deployed</a>, the server registers eight action-routed tool domains
+<p>Once <a href="../deployment/">deployed</a>, the server registers nine action-routed tools
 (<code>vaultwarden_system</code>, <code>vaultwarden_accounts</code>, <code>vaultwarden_ciphers</code>,
 <code>vaultwarden_folders</code>, <code>vaultwarden_organizations</code>, <code>vaultwarden_sends</code>,
-<code>vaultwarden_admin</code>, <code>vaultwarden_maintenance</code>). Each is independently togglable with a
-<code>*TOOL</code> environment flag. Setting <code>MCP_TOOL_MODE=verbose</code> additionally registers one
+<code>vaultwarden_admin</code>, <code>vaultwarden_maintenance</code>, <code>vaultwarden_metadata</code>). The
+read-only metadata tool serves the <a href="../ingestion/">certified structural source</a>; the
+other tools retain their existing domain controls. Setting <code>MCP_TOOL_MODE=verbose</code>
+additionally registers one
 fully-typed tool per API operation. Destructive tool actions require
 <code>"confirm": true</code> in <code>params_json</code>.</p>
 <h2 id="as-a-cli">As a CLI<a class="headerlink" href="#as-a-cli" title="Permanent link">&para;</a></h2>
@@ -884,13 +932,13 @@ references plus one TLS profile selector, then run <code>vaultwarden-mcp --trans
         
         
           
-          <a href="../platform/" class="md-footer__link md-footer__link--next" aria-label="Next: Backing Platform (Vaultwarden)">
+          <a href="../ingestion/" class="md-footer__link md-footer__link--next" aria-label="Next: Metadata Ingestion">
             <div class="md-footer__title">
               <span class="md-footer__direction">
                 Next
               </span>
               <div class="md-ellipsis">
-                Backing Platform (Vaultwarden)
+                Metadata Ingestion
               </div>
             </div>
             <div class="md-footer__button md-icon">

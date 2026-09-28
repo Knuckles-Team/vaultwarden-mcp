@@ -2,30 +2,34 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
          <loc>https://knuckles-team.github.io/vaultwarden-mcp/</loc>
-         <lastmod>2026-09-14</lastmod>
+         <lastmod>2026-09-28</lastmod>
     </url>
     <url>
          <loc>https://knuckles-team.github.io/vaultwarden-mcp/concepts/</loc>
-         <lastmod>2026-09-14</lastmod>
+         <lastmod>2026-09-28</lastmod>
     </url>
     <url>
          <loc>https://knuckles-team.github.io/vaultwarden-mcp/deployment/</loc>
-         <lastmod>2026-09-14</lastmod>
+         <lastmod>2026-09-28</lastmod>
+    </url>
+    <url>
+         <loc>https://knuckles-team.github.io/vaultwarden-mcp/ingestion/</loc>
+         <lastmod>2026-09-28</lastmod>
     </url>
     <url>
          <loc>https://knuckles-team.github.io/vaultwarden-mcp/installation/</loc>
-         <lastmod>2026-09-14</lastmod>
+         <lastmod>2026-09-28</lastmod>
     </url>
     <url>
          <loc>https://knuckles-team.github.io/vaultwarden-mcp/overview/</loc>
-         <lastmod>2026-09-14</lastmod>
+         <lastmod>2026-09-28</lastmod>
     </url>
     <url>
          <loc>https://knuckles-team.github.io/vaultwarden-mcp/platform/</loc>
-         <lastmod>2026-09-14</lastmod>
+         <lastmod>2026-09-28</lastmod>
     </url>
     <url>
          <loc>https://knuckles-team.github.io/vaultwarden-mcp/usage/</loc>
-         <lastmod>2026-09-14</lastmod>
+         <lastmod>2026-09-28</lastmod>
     </url>
 </urlset>
