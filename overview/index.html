@@ -829,7 +829,7 @@ A2A Agent for Agentic AI!</p>
   <code>accounts</code>, <code>ciphers</code>, <code>folders</code>, <code>organizations</code>, <code>sends</code>, <code>admin</code>, <code>maintenance</code> —
   plus the read-only <code>vaultwarden_metadata</code> source surface. Registration tags remain
   strictly lowercase and togglable with a <code>*TOOL</code> environment flag. Setting
-  <code>MCP_TOOL_MODE=verbose</code> additionally exposes one fully-typed tool per API operation.</li>
+  <code>MCP_TOOL_MODE=verbose</code> also exposes one fully-typed tool per API operation.</li>
 <li><strong>Two crypto backends behind one contract</strong>: <code>native</code> (pure-Python Bitwarden key
   derivation and EncString handling) and <code>bw_cli</code> (delegates to an installed Bitwarden
   CLI), both implementing the same <code>VaultCrypto</code> protocol so higher-level operations —

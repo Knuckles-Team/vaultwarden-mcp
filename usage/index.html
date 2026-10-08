@@ -834,7 +834,7 @@
 
 <h1 id="usage-api-cli-mcp">Usage — API / CLI / MCP<a class="headerlink" href="#usage-api-cli-mcp" title="Permanent link">&para;</a></h1>
 <p><code>vaultwarden-mcp</code> exposes the same capability three ways: as <strong>MCP tools</strong> an agent
-calls, as a <strong>Python API</strong> you import, and as a <strong>CLI</strong>.</p>
+calls, as a <strong>Python API</strong> the operator import, and as a <strong>CLI</strong>.</p>
 <h2 id="configuration">Configuration<a class="headerlink" href="#configuration" title="Permanent link">&para;</a></h2>
 <p>Configure <code>provider_configs.vaultwarden</code> in <code>AgentConfig</code> with an <code>endpoint_ref</code>, one
 <code>tls_profile</code>/<code>tls_profile_ref</code>, <code>credential_refs</code> (upper-case <code>CLIENT_ID</code> /
@@ -872,7 +872,7 @@ MCP tool surface and the action-routed domain tools use internally.</p>
 <code>vaultwarden_admin</code>, <code>vaultwarden_maintenance</code>, <code>vaultwarden_metadata</code>). The
 read-only metadata tool serves the <a href="../ingestion/">certified structural source</a>; the
 other tools retain their existing domain controls. Setting <code>MCP_TOOL_MODE=verbose</code>
-additionally registers one
+also registers one
 fully-typed tool per API operation. Destructive tool actions require
 <code>"confirm": true</code> in <code>params_json</code>.</p>
 <h2 id="as-a-cli">As a CLI<a class="headerlink" href="#as-a-cli" title="Permanent link">&para;</a></h2>
