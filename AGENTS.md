@@ -17,7 +17,7 @@
       `vaultwarden_admin`, `vaultwarden_maintenance`, `vaultwarden_metadata`).
     - `vaultwarden_mcp/crypto/`: Pluggable decrypted-vault backends (`native`, `bw_cli`)
       behind the `VaultCrypto` protocol in `crypto/base.py`.
-    - `vaultwarden_mcp/vault/dedupe.py`: Pure planning + bulk-soft-delete apply for
+    - `vaultwarden_mcp/vault/dedupe.py`: Pure planning + bulk-soft-remove apply for
       duplicate vault items.
     - `vaultwarden_mcp/kg_ingest.py`: Certified metadata-only structural projection.
     - `vaultwarden_mcp/mcp_server.py`: Main MCP server entry point and tool registration.
@@ -95,7 +95,7 @@ vaultwarden-agent
 - Run `pre-commit` before pushing changes.
 - Use existing patterns from `agent-utilities`.
 - Keep tools focused and idempotent where possible.
-- Prefer soft delete (trash) over permanent deletion; require `confirm: true` for anything
+- Prefer soft remove (trash) over permanent deletion; require `confirm: true` for anything
   destructive.
 
 **Don't:**
@@ -110,7 +110,7 @@ vaultwarden-agent
 
 **Ask first:**
 - Major refactors of `mcp_server.py` or `agent_server.py`.
-- Deleting or renaming public tool functions.
+- Removing or renaming public tool functions.
 
 **Never do:**
 - Commit resolved provider values, certificate paths, or secrets.
@@ -134,10 +134,10 @@ Read this before touching `auth.py`, `api/api_client_base.py`, `crypto/`, or
   token to `/admin` once and reuses the resulting `VW_ADMIN` session cookie; `none` is for
   public endpoints (`/alive`, `/api/version`, `/api/config`, prelogin). A request never
   silently escalates from one mode to another.
-- **The soft-vs-hard delete trap.** In Vaultwarden, `PUT /api/ciphers/delete` is a
-  **soft** delete — it moves items to trash, recoverable for 30 days. `POST
-  /api/ciphers/delete` and `DELETE /api/ciphers` are **permanent**. Only the `PUT` route
-  is ever wired to a bulk-delete tool action (`VaultwardenApiBase.soft_delete_ciphers`);
+- **The soft-vs-hard remove trap.** In Vaultwarden, `PUT /api/ciphers/delete` is a
+  **soft** remove — it moves items to trash, recoverable for 30 days. `POST
+  /api/ciphers/remove` and `Remove /api/ciphers` are **permanent**. Only the `PUT` route
+  is ever wired to a bulk-remove tool action (`VaultwardenApiBase.soft_delete_ciphers`);
   do not add a shortcut to either permanent route without an explicit, separately
   confirmed "purge" action and unambiguous user intent.
 - **Upper-case credential aliases.** `provider_configs.vaultwarden.credential_refs` uses
@@ -151,11 +151,11 @@ Read this before touching `auth.py`, `api/api_client_base.py`, `crypto/`, or
   `vaultwarden_mcp/ontology/vaultwarden.ttl`). Agent Utilities `source_sync` is the only
   graph commit/checkpoint/reconcile authority; do not restore a connector-local writer or
   a generic cipher-document preset. When adding a mapping, whitelist fields explicitly.
-  If a field could hold user-entered vault content, it does not belong in the graph.
+  If a field can hold user-entered vault content, it does not belong in the graph.
 - **Two crypto backends, one contract.** `native` (`crypto/native.py`, `crypto/keys.py`,
   `crypto/encstring.py`) is a pure-Python reimplementation of Bitwarden's key derivation
   and EncString handling, validated against the SDK's own published test vectors
-  (`tests/test_crypto_vectors.py`); it verifies the EncString MAC before ever attempting
+  (`tests/test_crypto_vectors.py`); it checks the EncString MAC before ever attempting
   decryption and only accepts strict type-2 EncStrings. `bw_cli` (`crypto/bw_cli.py`)
   delegates to an installed Bitwarden CLI in a private, per-instance
   `BITWARDENCLI_APPDATA_DIR` — never the invoking user's real `bw` login state — and
@@ -207,27 +207,27 @@ and erodes a pristine codebase.
 `~/workspace/reports/` (command output); tests go in `tests/` (pytest).
 Before finishing a task, run `git status` and confirm no stray root files were added.
 
-## Working Discipline — think, simplify, stay surgical, verify
+## Working Discipline — think, simplify, stay surgical, check
 
 These four habits cut the most common LLM coding mistakes. For trivial tasks, use
 judgment; the bias here is correctness over speed.
 
-- **Think before coding.** State your assumptions explicitly. If a request has more than
+- **Think before coding.** State the operator's assumptions explicitly. If a request has more than
   one reasonable reading, surface the options instead of silently picking one. If a
   simpler approach exists, say so and push back when warranted. When something is
   genuinely unclear, stop and name what's confusing — ask, don't guess.
 - **Simplicity first.** Write the minimum code that solves the stated problem — no
   speculative features, no abstraction for single-use code, no configurability that
-  wasn't requested, no error handling for impossible states. If you wrote 200 lines and
-  it could be 50, rewrite it. (Name code from its purpose, never `wave0`/`phase2`/`v2`.)
+  wasn't requested, no error handling for impossible states. If the operator wrote 200 lines and
+  it can be 50, rewrite it. (Name code from its purpose, never `wave0`/`phase2`/`v2`.)
 - **Stay surgical.** Every changed line should trace directly to the task. Don't refactor,
-  reformat, or "improve" working code adjacent to your change; match the existing style
-  even where you'd do it differently. Remove only the imports/symbols your own change
-  orphaned; if you spot unrelated dead code, mention it rather than deleting it inline.
+  reformat, or "improve" working code adjacent to the operator's change; match the existing style
+  even where the operator'd do it differently. Remove only the imports/symbols the operator's own change
+  orphaned; if the operator spot unrelated dead code, mention it rather than removing it inline.
   *Exception — the Quality Bar below:* lint/format/type errors the pre-commit gate flags
-  get fixed regardless of who introduced them. In short: **surgical on behavior, clean on
+  get fixed in either case of who introduced them. In short: **surgical on behavior, clean on
   lint.**
-- **Verify against a goal.** Turn the task into a checkable outcome before you start:
+- **Check against a goal.** Turn the task into a checkable outcome before the operator start:
   "fix the bug" → "write a failing test that reproduces it, then make it pass"; "add
   validation" → "tests for the invalid inputs pass". For multi-step work, state the short
   plan and the check for each step, then loop until the checks pass.
@@ -242,8 +242,8 @@ pre-commit run --all-files
 ```
 
 Resolve **every** issue it reports — failures, lint errors, type errors, and
-warnings — **including problems that pre-date your change and were not caused by
-your edits**. The standing goal is a clean, working codebase with **no errors and
+warnings — **including problems that pre-date the operator's change and were not caused by
+the operator's edits**. The standing goal is a clean, working codebase with **no errors and
 no warnings**. Do not silence checks (`# noqa`, `# type: ignore`, `SKIP=`,
 `--no-verify`) to force green unless the exception is already documented in this
 file as a known, unavoidable limitation. Only commit once `pre-commit run
@@ -255,7 +255,7 @@ why rather than bypassing it.
 Multiple agents/sessions work the configured package repos concurrently. **Do not
 edit the canonical checkout** (`$AGENT_PACKAGES_ROOT/<repo>`) — a
 background `repository-manager` sync can reset its working tree and discard
-uncommitted edits. Take your own git worktree on your own branch instead:
+uncommitted edits. Take the operator's own git worktree on the operator's own branch instead:
 
 ```bash
 # preferred — repository-manager MCP:
@@ -277,7 +277,7 @@ worktree root outside the repository-manager workspace scan.
 2. **Commit** in the worktree.
 3. **Merge to main locally** — `rm_worktree merge <repo> <branch> --into main`
    (or `git merge --no-ff`). Push only when the user asks.
-4. **Clean up** — remove the worktree and delete the merged branch:
+4. **Clean up** — remove the worktree and remove the merged branch:
    `rm_worktree remove <repo> <branch> --delete-branch`; `rm_worktree prune` clears
    stale entries. (Raw-git: `git worktree remove <path> && git branch -d <branch>`.)
 
@@ -303,8 +303,8 @@ is what Dependabot flags. Rules:
 
 1. **Never hand-edit a version string.** Change the version ONLY via
    `bump-my-version bump {patch|minor|major}` (a.k.a. `bump2version`), which rewrites every file
-   registered in `.bumpversion.cfg` in one atomic, tagged commit. If you edited the version in
-   `pyproject.toml` by hand, you created drift — revert and use the bumper.
+   registered in `.bumpversion.cfg` in one atomic, tagged commit. If the operator edited the version in
+   `pyproject.toml` by hand, the operator created drift — revert and use the bumper.
 2. **Every version-bearing file must be registered in `.bumpversion.cfg`** — at minimum
    `pyproject.toml` AND `README.md`, plus `docker/Dockerfile`, `a2a.json`, and both module
    `__version__`s (`mcp_server.py`, `agent_server.py`). Never add a file that embeds the

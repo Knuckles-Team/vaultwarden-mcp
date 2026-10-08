@@ -20,7 +20,7 @@ This project follows the standardized agent-package pattern:
   `accounts`, `ciphers`, `folders`, `organizations`, `sends`, `admin`, `maintenance` —
   plus the read-only `vaultwarden_metadata` source surface. Registration tags remain
   strictly lowercase and togglable with a `*TOOL` environment flag. Setting
-  `MCP_TOOL_MODE=verbose` additionally exposes one fully-typed tool per API operation.
+  `MCP_TOOL_MODE=verbose` also exposes one fully-typed tool per API operation.
 - **Two crypto backends behind one contract**: `native` (pure-Python Bitwarden key
   derivation and EncString handling) and `bw_cli` (delegates to an installed Bitwarden
   CLI), both implementing the same `VaultCrypto` protocol so higher-level operations —

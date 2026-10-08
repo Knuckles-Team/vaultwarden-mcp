@@ -34,10 +34,10 @@ no longer exist, so there is one source and one commit authority.
 Delta calls accept the last committed ISO-8601 checkpoint. Changed item nodes retain
 the locally resolved folder, organization, and collection closure required by their
 edges; an unchanged delta returns an empty, digest-bound structural no-op. Full calls
-return the complete projection. Reconcile calls additionally mark the sorted
+return the complete projection. Reconcile calls also mark the sorted
 `live_ids` set as authoritative. Agent Utilities alone applies tombstones and
 advances the checkpoint.
 
 Backfeed is unsupported. The preset and response both declare read-only operation, and
 `backfeed_metadata` refuses before making any provider call. A future write-back
-contract would require a separately reviewed field allowlist and approval boundary.
+contract will require a separately reviewed field allowlist and approval boundary.

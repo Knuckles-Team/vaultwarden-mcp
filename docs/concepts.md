@@ -26,8 +26,8 @@ superset of the `CONCEPT:VW-…` markers actually present in `vaultwarden_mcp/**
 | `VW-OS.crypto.native-vault-crypto` | Native Vault Crypto | Pure-Python Bitwarden key derivation (PBKDF2-SHA256/Argon2id), HKDF stretching, AES-256-CBC + HMAC-SHA256 EncStrings, and RSA-OAEP key unwrap, validated against Bitwarden's published SDK test vectors. |
 | `VW-OS.crypto.bw-cli-vault-crypto` | Bitwarden CLI Vault Crypto | Decrypted-vault backend delegating to an installed `bw` CLI in a private per-instance data directory. |
 | `VW-KG.ingest.metadata-only` | Metadata-Only KG Ingest | Only identifiers, type codes, lifecycle dates, counts, and relationships ever reach the knowledge graph; vault contents (names, usernames, passwords, notes, URIs, keys) are never ingested. |
-| `VW-ECO.vault.deduplication` | Vault Deduplication | Exact/loose duplicate-item planning, keep-newest selection, and bulk soft-delete apply (`vaultwarden_maintenance`). |
-| `VW-OS.transport.soft-hard-delete-boundary` | Soft/Hard Delete Boundary | `PUT /api/ciphers/delete` (soft, trash) is the only bulk-delete route ever wired to a tool action; `POST /api/ciphers/delete` and `DELETE /api/ciphers` (permanent) are not. |
+| `VW-ECO.vault.deduplication` | Vault Deduplication | Exact/loose duplicate-item planning, keep-newest selection, and bulk soft-remove apply (`vaultwarden_maintenance`). |
+| `VW-OS.transport.soft-hard-delete-boundary` | Soft/Hard Remove Boundary | `PUT /api/ciphers/delete` (soft, trash) is the only bulk-remove route ever wired to a tool action; `POST /api/ciphers/delete` and `DELETE /api/ciphers` (permanent) are not. |
 
 ## Test & Governance Concepts
 
