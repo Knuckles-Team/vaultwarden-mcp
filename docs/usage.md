@@ -1,7 +1,7 @@
 # Usage — API / CLI / MCP
 
 `vaultwarden-mcp` exposes the same capability three ways: as **MCP tools** an agent
-calls, as a **Python API** you import, and as a **CLI**.
+calls, as a **Python API** the operator import, and as a **CLI**.
 
 ## Configuration
 
@@ -47,7 +47,7 @@ Once [deployed](deployment.md), the server registers nine action-routed tools
 `vaultwarden_admin`, `vaultwarden_maintenance`, `vaultwarden_metadata`). The
 read-only metadata tool serves the [certified structural source](ingestion.md); the
 other tools retain their existing domain controls. Setting `MCP_TOOL_MODE=verbose`
-additionally registers one
+also registers one
 fully-typed tool per API operation. Destructive tool actions require
 `"confirm": true` in `params_json`.
 

@@ -50,13 +50,13 @@ action router, telemetry, governance) for fleet consistency.
 - **Action-routed MCP tools** — eight domain tools (`vaultwarden_system`,
   `vaultwarden_accounts`, `vaultwarden_ciphers`, `vaultwarden_folders`,
   `vaultwarden_organizations`, `vaultwarden_sends`, `vaultwarden_admin`,
-  `vaultwarden_maintenance`) each route to many underlying operations via an `action`
-  argument, keeping the tool surface small. Setting `MCP_TOOL_MODE=verbose` additionally
+  `vaultwarden_maintenance`) each route to multiple underlying operations via an `action`
+  argument, keeping the tool surface small. Setting `MCP_TOOL_MODE=verbose` also
   registers one fully-typed tool per API operation from the generated operation manifest.
 - **Three interfaces, one package** — use it as a Python **API client**, an **MCP server**
   (`stdio` / `streamable-http` / `sse`), or a Pydantic-AI **A2A agent**.
 - **Destructive operations require `confirm: true`.** Bulk item removal is soft by
-  default — see [Architecture](#architecture) for the delete-route trap.
+  default — see [Architecture](#architecture) for the remove-route trap.
 - **Two crypto backends** — a pure-Python native implementation, or delegation to an
   installed Bitwarden CLI. See [Architecture](#architecture).
 - **Metadata-only knowledge-graph ingestion** — a Wire-First `vaultwarden_maintenance`
@@ -87,18 +87,18 @@ python -m pip install "vaultwarden-mcp[all]"     # + MCP server + A2A agent + te
 
 | Extra | Installs | Use when |
 |-------|----------|----------|
-| `vaultwarden-mcp[mcp]` | Connector-focused MCP server (`agent-utilities[mcp]` — FastMCP/FastAPI + `epistemic-graph[full]`) | You only run the **MCP server** (smallest install / image) |
-| `vaultwarden-mcp[agent]` | Agent runtime (`agent-utilities[agent-runtime,logfire]` — model orchestration + `epistemic-graph[full]`) | You run the **integrated A2A agent** |
+| `vaultwarden-mcp[mcp]` | Connector-focused MCP server (`agent-utilities[mcp]` — FastMCP/FastAPI + `epistemic-graph[full]`) | The operator only run the **MCP server** (smallest install / image) |
+| `vaultwarden-mcp[agent]` | Agent runtime (`agent-utilities[agent-runtime,logfire]` — model orchestration + `epistemic-graph[full]`) | The operator run the **integrated A2A agent** |
 | `vaultwarden-mcp[all]` | Everything (`mcp` + `agent` + `logfire`) | Development / both surfaces |
 
 ### Console scripts
 
-After installation the following entry points are available on your `PATH`:
+After installation the following entry points are available on the operator's `PATH`:
 
 | Command | Description |
 |---------|-------------|
-| `vaultwarden-mcp` | Launch the MCP server |
-| `vaultwarden-agent` | Launch the A2A agent server |
+| `vaultwarden-mcp` | Start the MCP server |
+| `vaultwarden-agent` | Start the A2A agent server |
 
 ### Container images (`:mcp` vs `:agent`)
 
@@ -153,7 +153,7 @@ Tools are action-routed — pass an `action` plus a JSON `params_json` string:
 }
 ```
 
-Destructive actions (bulk trash, permanent removal, disabling a user) additionally
+Destructive actions (bulk trash, permanent removal, disabling a user) also
 require `"confirm": true` in `params_json`.
 
 ## Architecture
@@ -177,17 +177,17 @@ derives a fully-typed parameter schema per operation from that catalog, consumed
 `MCP_TOOL_MODE=verbose` to synthesize one MCP tool per operation instead of a generic
 `params_json` fallback.
 
-**The soft-delete trap:** `PUT /api/ciphers/delete` moves items to trash (recoverable for
-30 days) — this is the only bulk-delete route this package's tools ever call.
+**The soft-remove trap:** `PUT /api/ciphers/delete` moves items to trash (recoverable for
+30 days) — this is the only bulk-remove route this package's tools ever call.
 `POST /api/ciphers/delete` and `DELETE /api/ciphers` are **permanent** in Vaultwarden and
-are deliberately not wired to any bulk-delete tool action.
+are deliberately not wired to any bulk-remove tool action.
 
 **Decrypted vault access** (`vaultwarden_mcp/crypto/`) is a pluggable `VaultCrypto`
 backend, selected by `selector_refs.CRYPTO_BACKEND`:
 
 - `native` (default) — pure-Python key derivation (PBKDF2-SHA256 or Argon2id) and HKDF
   stretching (`crypto/keys.py`), AES-256-CBC + HMAC-SHA256 EncStrings with the MAC
-  verified before any decryption, and RSA-OAEP unwrap of organization and per-item keys
+  checked before any decryption, and RSA-OAEP unwrap of organization and per-item keys
   (`crypto/encstring.py`). Only strict type-2 EncStrings are decrypted; anything else
   passes through unchanged. Validated against Bitwarden's own published SDK test vectors.
 - `bw_cli` — delegates key handling to an installed Bitwarden CLI (`bw`), driving a
@@ -196,7 +196,7 @@ backend, selected by `selector_refs.CRYPTO_BACKEND`:
 
 Both backends produce and accept records in the Bitwarden CLI JSON shape, so
 `vaultwarden_mcp/vault/dedupe.py` (exact or loose duplicate matching, keep-newest
-selection, bulk soft-delete apply) behaves identically regardless of backend.
+selection, bulk soft-remove apply) behaves identically in either case of backend.
 
 `vaultwarden_mcp/kg_ingest.py` projects vault entities as typed OWL nodes
 (`:VaultwardenItem` subclasses, `:VaultwardenFolder`, `:VaultwardenCollection`,
@@ -771,7 +771,7 @@ Full documentation is published to the GitHub Pages site and mirrored under `doc
 - [Platform](docs/platform.md)
 - [Concept Registry](docs/concepts.md)
 
-See `AGENTS.md` for domain-specific traps (the soft-vs-hard delete routes, the upper-case
+See `AGENTS.md` for domain-specific traps (the soft-vs-hard remove routes, the upper-case
 credential alias rule, and the KG metadata-only boundary).
 
 ---
@@ -787,11 +787,11 @@ credential alias rule, and the KG metadata-only boundary).
 
 ## Contribute
 
-Contributions are welcome! Please ensure code quality by executing local checks before submitting pull requests:
+Contributions are welcome! Please ensure code quality by running local checks before submitting pull requests:
 - Format code using `ruff format .`
 - Lint code using `ruff check .`
 - Validate type-safety with `mypy .`
-- Execute test suites using `pytest`
+- Run test suites using `pytest`
 
 
 <!-- BEGIN agent-utilities-deployment (generated; do not edit between markers) -->

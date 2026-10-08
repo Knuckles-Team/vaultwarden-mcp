@@ -11,14 +11,14 @@ one locally as an AgentConfig-selected provider endpoint.
 
 !!! warning "Development recipe only"
     This recipe has no TLS termination and stores data on a bind mount with no backup
-    policy. Front it with an authenticated TLS-terminating ingress and a real backup
+    policy. Front it with an authenticated TLS-stop ingress and a real backup
     schedule before using it for anything beyond local development.
 
 ## Single-node deployment (Compose)
 
 This is an operator-owned example, not a file shipped by this connector. Save it as
 `platform.compose.yml` outside the repository, replace the image placeholder with a
-reviewed immutable digest, and manage its data and secrets with your platform controls.
+reviewed immutable digest, and manage its data and secrets with the operator's platform controls.
 
 ```yaml
 services:
@@ -57,6 +57,6 @@ docker compose -f platform.compose.yml up -d
    `CLIENT_SECRET`.
 3. Populate `provider_configs.vaultwarden` in `AgentConfig` — `endpoint_ref` pointing at
    this instance, the credential references above, a TLS profile once the ingress is
-   TLS-terminated, and `MASTER_PASSWORD` / `ADMIN_TOKEN` references only for the tool
+   TLS-stop, and `MASTER_PASSWORD` / `ADMIN_TOKEN` references only for the tool
    groups that need them (decrypted vault operations, and `vaultwarden_admin`,
    respectively).
