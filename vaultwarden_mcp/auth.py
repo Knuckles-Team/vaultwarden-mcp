@@ -14,11 +14,14 @@ Aliases are upper-case, as AgentConfig requires; values are ``env://`` or secret
 references resolved only at runtime.
 """
 
+import logging
 from typing import Any
 
-from agent_utilities.base_utilities import get_logger
+from agent_connector_sdk.exceptions import AuthError, UnauthorizedError
+
+# No agent_connector_sdk equivalent for AgentConfig / provider_runtime profile
+# resolution exists yet (SDK gap — see PR description); kept on agent_utilities.
 from agent_utilities.core import config as config_module
-from agent_utilities.core.exceptions import AuthError, UnauthorizedError
 from agent_utilities.core.provider_runtime import (
     ResolvedProviderRuntime,
     resolve_provider_runtime_profile,
@@ -29,7 +32,7 @@ from .crypto.base import VaultCrypto
 
 PROVIDER = "vaultwarden"
 
-logger = get_logger(__name__)
+logger = logging.getLogger(__name__)
 _client: VaultwardenApi | None = None
 _provider_runtime: ResolvedProviderRuntime | None = None
 _vault_crypto: VaultCrypto | None = None
@@ -56,23 +59,33 @@ def get_client(config: config_module.AgentConfig | None = None) -> VaultwardenAp
         runtime.close()
         raise RuntimeError("Provider profile requires endpoint and TLS references")
 
-    from agent_utilities.mcp.delegated_auth import (
-        get_delegated_token,
-        get_user_identity,
-        is_delegation_enabled,
+    import httpx
+    from agent_connector_sdk.auth.delegation import (
+        DelegationSettings,
+        current_user_token,
+        exchange_token,
     )
+    from agent_connector_sdk.exceptions import LoginRequiredError
 
     # --- Path 1: OIDC Delegation (RFC 8693 Token Exchange) ---
-    if is_delegation_enabled():
+    delegation_settings = DelegationSettings.from_settings()
+    if delegation_settings.enabled:
         try:
-            delegated_token = get_delegated_token(audience=runtime.endpoint)
-            get_user_identity()
+            subject_token = current_user_token()
+            if not subject_token:
+                raise LoginRequiredError("no verified caller token to delegate")
+            with httpx.Client(timeout=30) as http_client:
+                access_token = exchange_token(
+                    delegation_settings,
+                    subject_token=subject_token,
+                    http_client=http_client,
+                )
             logger.info("Using OIDC delegated token")
             _client = VaultwardenApi(
                 base_url=runtime.endpoint,
                 tls_profile=runtime.tls,
                 credentials=_credentials(runtime),
-                token=delegated_token,
+                token=access_token.value,
             )
             _provider_runtime = runtime
             return _client
