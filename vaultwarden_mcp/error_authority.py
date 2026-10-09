@@ -18,7 +18,7 @@ from collections.abc import Mapping
 from dataclasses import dataclass
 from typing import Any
 
-from agent_utilities.security.persistence_privacy import sanitize_for_persistence
+from agent_connector_sdk.privacy import sanitize_for_persistence
 
 PROBLEM_JSON_MEDIA_TYPE = "application/problem+json"
 STRUCTURED_MARKDOWN_MEDIA_TYPE = "text/markdown"
