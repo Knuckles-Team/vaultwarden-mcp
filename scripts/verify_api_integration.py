@@ -222,7 +222,7 @@ def main():
     if package_root:
         agents_dir = os.path.join(os.path.expanduser(package_root), "agents")
     else:
-        workspace = os.environ.get("AGENT_UTILITIES_WORKSPACE_ROOT", os.getcwd())
+        workspace = os.environ.get("CONNECTOR_WORKSPACE_ROOT", os.getcwd())
         agents_dir = os.path.join(
             os.path.expanduser(workspace), "agent-packages", "agents"
         )

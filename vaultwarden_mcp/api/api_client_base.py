@@ -23,8 +23,9 @@ from dataclasses import dataclass
 from typing import Any, Literal
 from urllib.parse import SplitResult, urljoin, urlsplit
 
-from agent_utilities.core.http_client import create_http_client
-from agent_utilities.core.transport_security import ResolvedTLSProfile
+from agent_connector_sdk.http.client import create_http_client
+from agent_connector_sdk.http.options import HttpClientOptions
+from agent_connector_sdk.tls.profile import ResolvedTLSProfile
 
 _MAX_RESPONSE_BYTES = 16 * 1024 * 1024
 _MAX_RESPONSE_SECONDS = 60.0
@@ -148,7 +149,7 @@ class VaultwardenApiBase:
         *,
         token: str | None = None,
     ) -> None:
-        self.base_url, self._origin, hostname = _validate_base_url(base_url)
+        self.base_url, self._origin, _ = _validate_base_url(base_url)
         self.tls_profile = tls_profile
         self.credentials = credentials or VaultwardenCredentials()
         self._access_token: str | None = token or None
@@ -156,13 +157,13 @@ class VaultwardenApiBase:
         self._token_payload: dict[str, Any] = {}
         self._admin_authenticated = False
         self.session = create_http_client(
-            timeout=_REQUEST_TIMEOUT_S,
-            headers={"Accept": "application/json"},
-            follow_redirects=False,
-            pin_egress=not tls_profile.proxy_url and not tls_profile.trust_env,
-            allowed_private_hosts=(hostname,),
-            allow_loopback=True,
-            **tls_profile.httpx_kwargs(),
+            HttpClientOptions(
+                base_url=self.base_url,
+                timeout=_REQUEST_TIMEOUT_S,
+                headers={"Accept": "application/json"},
+                tls=tls_profile,
+                allow_plaintext=True,
+            )
         )
 
     # -- transport -------------------------------------------------------------------

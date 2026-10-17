@@ -21,7 +21,6 @@ pip install vaultwarden-mcp
 | Extra | Install | Pulls in |
 |---|---|---|
 | `mcp` | `pip install "vaultwarden-mcp[mcp]"` | MCP runtime + mandatory `epistemic-graph[full]` |
-| `agent` | `pip install "vaultwarden-mcp[agent]"` | Current agent runtime + Logfire tracing |
 | `all` | `pip install "vaultwarden-mcp[all]"` | Everything above |
 
 ### Console scripts
@@ -29,7 +28,6 @@ pip install vaultwarden-mcp
 | Command | Description |
 |---|---|
 | `vaultwarden-mcp` | Launch the MCP server |
-| `vaultwarden-agent` | Launch the A2A agent server |
 
 ### Optional: the Bitwarden CLI
 
@@ -53,5 +51,4 @@ docker pull "$IMAGE_REF"
 ```
 
 See [Deployment](deployment.md) for `docker run` / Compose usage. The repository's
-`README.md` documents the `:mcp` vs `:agent` build targets for the multi-stage
 `docker/Dockerfile`.

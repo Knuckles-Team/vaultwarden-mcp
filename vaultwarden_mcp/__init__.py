@@ -14,7 +14,6 @@ CORE_MODULES = [
 ]
 
 OPTIONAL_MODULES = {
-    "vaultwarden_mcp.agent_server": "agent",
     "vaultwarden_mcp.mcp_server": "mcp",
 }
 
@@ -52,4 +51,4 @@ for module_name, extra_name in OPTIONAL_MODULES.items():
     else:
         globals()[f"_{extra_name.upper()}_AVAILABLE"] = False
 
-__all__.extend(["_MCP_AVAILABLE", "_AGENT_AVAILABLE"])
+__all__.extend(["_MCP_AVAILABLE"])

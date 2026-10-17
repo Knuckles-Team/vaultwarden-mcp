@@ -165,3 +165,17 @@ def test_soft_delete_uses_put():
 
 def test_credentials_are_redacted():
     assert "secret" not in repr(VaultwardenCredentials(client_secret="secret"))
+
+
+def test_governed_client_is_built_with_real_sdk_options():
+    """The transport builds through the SDK's HttpClientOptions (no stubbing)."""
+    client = VaultwardenApi(
+        base_url="https://vault.example.invalid",
+        tls_profile=_tls_profile(),
+        credentials=VaultwardenCredentials(),
+    )
+    try:
+        assert str(client.session.base_url).startswith("https://vault.example.invalid")
+        assert client.session.follow_redirects is False
+    finally:
+        client.session.close()

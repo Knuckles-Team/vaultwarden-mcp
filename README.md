@@ -1,5 +1,5 @@
 # Vaultwarden Mcp
-## CLI or API | MCP | Agent
+## CLI or API | MCP
 
 ![PyPI - Version](https://img.shields.io/pypi/v/vaultwarden-mcp)
 ![MCP Server](https://badge.mcpx.dev?type=server 'MCP Server')
@@ -44,7 +44,7 @@ server via the Model Context Protocol — 281 REST operations across 13 domains 
 ciphers, folders, organizations, sends, two-factor, emergency access, events, admin,
 identity, icons, misc, public), a decrypted-vault layer for item/folder read and edit, and
 vault maintenance (deduplication, password rotation). It is built on the shared
-[`agent-utilities`](https://github.com/Knuckles-Team/agent-utilities) framework (auth, the
+[`agent-connector-sdk`](https://github.com/Knuckles-Team/agent-connector-sdk) framework (auth, the
 action router, telemetry, governance) for fleet consistency.
 
 - **Action-routed MCP tools** — eight domain tools (`vaultwarden_system`,
@@ -53,8 +53,8 @@ action router, telemetry, governance) for fleet consistency.
   `vaultwarden_maintenance`) each route to multiple underlying operations via an `action`
   argument, keeping the tool surface small. Setting `MCP_TOOL_MODE=verbose` also
   registers one fully-typed tool per API operation from the generated operation manifest.
-- **Three interfaces, one package** — use it as a Python **API client**, an **MCP server**
-  (`stdio` / `streamable-http` / `sse`), or a Pydantic-AI **A2A agent**.
+- **Two interfaces, one package** — use it as a Python **API client**, an **MCP server**
+  (`stdio` / `streamable-http` / `sse`).
 - **Destructive operations require `confirm: true`.** Bulk item removal is soft by
   default — see [Architecture](#architecture) for the remove-route trap.
 - **Two crypto backends** — a pure-Python native implementation, or delegation to an
@@ -72,11 +72,9 @@ action router, telemetry, governance) for fleet consistency.
 
 ```bash
 uvx --from "vaultwarden-mcp[mcp]" vaultwarden-mcp      # MCP server + full graph engine
-uvx --from "vaultwarden-mcp[agent]" vaultwarden-agent  # MCP + A2A agent runtime
 ```
 
 > Every supported install includes `epistemic-graph[full]`. The `[mcp]` extra adds
-> the MCP serving stack; `[agent]` adds the current `agent-runtime` and telemetry.
 
 ### Install with `pip`
 
@@ -87,8 +85,7 @@ python -m pip install "vaultwarden-mcp[all]"     # + MCP server + A2A agent + te
 
 | Extra | Installs | Use when |
 |-------|----------|----------|
-| `vaultwarden-mcp[mcp]` | Connector-focused MCP server (`agent-utilities[mcp]` — FastMCP/FastAPI + `epistemic-graph[full]`) | The operator only run the **MCP server** (smallest install / image) |
-| `vaultwarden-mcp[agent]` | Agent runtime (`agent-utilities[agent-runtime,logfire]` — model orchestration + `epistemic-graph[full]`) | The operator run the **integrated A2A agent** |
+| `vaultwarden-mcp[mcp]` | Connector-focused MCP server (`agent-connector-sdk` — FastMCP/FastAPI + `epistemic-graph[full]`) | The operator only run the **MCP server** (smallest install / image) |
 | `vaultwarden-mcp[all]` | Everything (`mcp` + `agent` + `logfire`) | Development / both surfaces |
 
 ### Console scripts
@@ -98,20 +95,17 @@ After installation the following entry points are available on the operator's `P
 | Command | Description |
 |---------|-------------|
 | `vaultwarden-mcp` | Start the MCP server |
-| `vaultwarden-agent` | Start the A2A agent server |
 
-### Container images (`:mcp` vs `:agent`)
+### Container images (`:mcp`)
 
-One multi-stage `docker/Dockerfile` builds two right-sized images, selected by `--target`:
+One multi-stage `docker/Dockerfile` builds the MCP-only image (`--target mcp`):
 
 | Local build tag | Build target | Contents | Entrypoint |
 |-----------|--------------|----------|------------|
 | `vaultwarden-mcp:mcp-local` | `--target mcp` | `vaultwarden-mcp[mcp]` — MCP serving runtime + `epistemic-graph[full]` | `vaultwarden-mcp` |
-| `vaultwarden-mcp:agent-local` | `--target agent` (default) | `vaultwarden-mcp[agent]` — MCP + agent runtime + `epistemic-graph[full]` | `vaultwarden-agent` |
 
 ```bash
 docker build --target mcp   -t vaultwarden-mcp:mcp-local docker/
-docker build --target agent -t vaultwarden-mcp:agent-local docker/
 ```
 
 ## Usage
@@ -202,7 +196,7 @@ selection, bulk soft-remove apply) behaves identically in either case of backend
 (`:VaultwardenItem` subclasses, `:VaultwardenFolder`, `:VaultwardenCollection`,
 `:VaultwardenServer`) and relationships (`:vaultwardenInFolder`,
 `:vaultwardenInOrganization`, `:vaultwardenInCollection`) through the certified
-`vaultwarden-metadata` source preset. Agent Utilities `source_sync` is the sole
+`vaultwarden-metadata` source preset. Agent Connector SDK `source_sync` is the sole
 graph commit, checkpoint, and reconcile authority. Only
 identifiers, type codes, lifecycle dates, counts, and relationships are accepted — every
 item name, username, password, note, URI, TOTP seed, custom field, attachment, folder
@@ -228,7 +222,7 @@ references in `AgentConfig`; do not place resolved values in MCP client JSON. Se
 <!-- MCP-CONFIG-EXAMPLES:START -->
 
 > **Install the connector-focused `[mcp]` extra.** Examples use `vaultwarden-mcp[mcp]` to add
-> FastMCP / FastAPI through `agent-utilities[mcp]`; the required Agent Utilities core
+> FastMCP / FastAPI through `agent-connector-sdk`; the required Agent Connector SDK core
 > still carries `epistemic-graph[full]`. The `[agent-runtime]` extra additionally
 > enables model orchestration.
 
@@ -395,7 +389,7 @@ Local engine autostart or an operator-configured remote engine is selected throu
 | `VAULTWARDEN_MCP_IMAGE` | — | e.g. registry.example.invalid/vaultwarden-mcp@sha256:<digest> |
 | `VAULTWARDEN_AGENT_IMAGE` | — | e.g. registry.example.invalid/vaultwarden-mcp@sha256:<digest> |
 
-#### Inherited agent-utilities variables (apply to every connector)
+#### Inherited agent-connector-sdk variables (apply to every connector)
 
 | Variable | Example | Description |
 |----------|---------|-------------|
@@ -417,7 +411,7 @@ Local engine autostart or an operator-configured remote engine is selected throu
 | `MODEL_ID` | — | Operator-configured model id for the agent |
 | `ENABLE_WEB_UI` | `True` | Serve the AG-UI web interface |
 
-_18 package + 17 inherited variable(s). Auto-generated from `.env.example` + the shared agent-utilities set — do not edit._
+_18 package + 17 inherited variable(s). Auto-generated from `.env.example` + the shared agent-connector-sdk set — do not edit._
 <!-- ENV-VARS-TABLE:END -->
 
 The `provider_configs.vaultwarden` profile referenced above (see `vaultwarden_mcp/auth.py`)
@@ -441,7 +435,7 @@ a literal value.
 Each tool is **action-routed**: pass an `action` and a JSON `params_json` payload. Tool
 domains can be toggled on or off with the listed environment variable. The table below is
 **auto-generated from the live server** by the `mcp-readme-table` pre-commit hook
-(`python -m agent_utilities.mcp.readme_tools`) — do not edit it by hand.
+(`python -m agent_connector_sdk.mcp.readme_tools`) — do not edit it by hand.
 
 <!-- MCP-TOOLS-TABLE:START -->
 
@@ -794,27 +788,6 @@ Contributions are welcome! Please ensure code quality by running local checks be
 - Run test suites using `pytest`
 
 
-<!-- BEGIN agent-utilities-deployment (generated; do not edit between markers) -->
-
-## Deploy with `agent-utilities-deployment`
-
-Provision this package with the consolidated **`agent-utilities-deployment`**
-workflow. It selects an installed-package, editable-source, or immutable-container
-path; records only runtime secret and TLS-profile references in `AgentConfig`; and
-runs doctor, registration, policy, observability, and rollback gates. Ask your agent
-to **"deploy `vaultwarden-mcp` with agent-utilities-deployment"**.
-
-| Install mode | Command |
-|------|---------|
-| Installed package | `uv tool install "vaultwarden-mcp[mcp]"`, then run `vaultwarden-mcp` |
-| Editable source | `uv pip install -e ".[agent]"`, then run `vaultwarden-mcp` |
-| Immutable container | deploy `registry.example.invalid/vaultwarden-mcp@sha256:<digest>` through the operator-selected orchestrator |
-
-The repository embeds no deployment profile, credential value, certificate path, or
-environment-specific endpoint. Supply those at runtime through `AgentConfig` and the
-configured secret provider.
-
-<!-- END agent-utilities-deployment -->
 
 <!-- GOVERNED-CAPABILITY:START -->
 ## Governed capability contract
