@@ -11,7 +11,7 @@ from vaultwarden_mcp.api import (
     VaultwardenApiError,
     VaultwardenCredentials,
 )
-from vaultwarden_mcp.api.api_client_base import ADMIN_COOKIE, _MAX_RESPONSE_BYTES
+from vaultwarden_mcp.api.api_client_base import _MAX_RESPONSE_BYTES, ADMIN_COOKIE
 
 
 def _tls_profile():
@@ -179,3 +179,48 @@ def test_governed_client_is_built_with_real_sdk_options():
         assert client.session.follow_redirects is False
     finally:
         client.session.close()
+
+
+def test_governed_client_pins_egress_to_the_configured_host():
+    """DNS-pinned egress is on, allow-listing only the configured host."""
+    captured = {}
+
+    def capture(options):
+        captured["options"] = options
+        return FakeSession([])
+
+    with patch("vaultwarden_mcp.api.api_client_base.create_http_client", capture):
+        VaultwardenApi(
+            base_url="https://Vault.Example.Invalid/",
+            tls_profile=_tls_profile(),
+            credentials=VaultwardenCredentials(),
+        )
+    options = captured["options"]
+    assert options.pin_egress is True
+    assert options.allowed_private_hosts == ("vault.example.invalid",)
+    assert options.allow_loopback is True
+
+
+def test_governed_client_does_not_pin_behind_a_proxy():
+    """A proxied or trust_env profile cannot be DNS-pinned, so pinning is off."""
+    profile = _tls_profile()
+    for field, value in (
+        ("proxy_url", "http://proxy.example.invalid"),
+        ("trust_env", True),
+    ):
+        proxied = MagicMock(wraps=profile)
+        proxied.proxy_url = value if field == "proxy_url" else None
+        proxied.trust_env = value if field == "trust_env" else False
+        captured = {}
+
+        def capture(options):
+            captured["options"] = options
+            return FakeSession([])
+
+        with patch("vaultwarden_mcp.api.api_client_base.create_http_client", capture):
+            VaultwardenApi(
+                base_url="https://vault.example.invalid",
+                tls_profile=proxied,
+                credentials=VaultwardenCredentials(),
+            )
+        assert captured["options"].pin_egress is False

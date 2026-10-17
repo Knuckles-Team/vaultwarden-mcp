@@ -149,13 +149,16 @@ class VaultwardenApiBase:
         *,
         token: str | None = None,
     ) -> None:
-        self.base_url, self._origin, _ = _validate_base_url(base_url)
+        self.base_url, self._origin, hostname = _validate_base_url(base_url)
         self.tls_profile = tls_profile
         self.credentials = credentials or VaultwardenCredentials()
         self._access_token: str | None = token or None
         self._token_expires_at = float("inf") if token else 0.0
         self._token_payload: dict[str, Any] = {}
         self._admin_authenticated = False
+        # A proxied or trust_env profile cannot be DNS-pinned; the SDK refuses the
+        # private-host allow-list without pinning, so both are set together.
+        pin = not tls_profile.proxy_url and not tls_profile.trust_env
         self.session = create_http_client(
             HttpClientOptions(
                 base_url=self.base_url,
@@ -163,6 +166,9 @@ class VaultwardenApiBase:
                 headers={"Accept": "application/json"},
                 tls=tls_profile,
                 allow_plaintext=True,
+                pin_egress=pin,
+                allowed_private_hosts=(hostname,) if pin else (),
+                allow_loopback=pin,
             )
         )
 
