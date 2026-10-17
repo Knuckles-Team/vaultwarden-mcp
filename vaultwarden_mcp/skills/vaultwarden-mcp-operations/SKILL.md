@@ -2,7 +2,7 @@
 name: vaultwarden-mcp-operations
 skill_type: skill
 description: >-
-  Operate vaultwarden-mcp through its governed MCP and GraphOS capabilities, including
+  Operate vaultwarden-mcp through its governed MCP and Arbora capabilities, including
   vault item, folder, organization, send, account, and server administration plus vault
   maintenance such as deduplication. Use when a request requires this provider's read,
   change, automation, ingestion, troubleshooting, or evidence workflows.
@@ -10,7 +10,7 @@ description: >-
 
 # Vaultwarden Mcp Operations
 
-Use the provider's governed MCP tools through GraphOS delegation.
+Use the provider's governed MCP tools through Arbora delegation.
 
 ## Workflow
 
