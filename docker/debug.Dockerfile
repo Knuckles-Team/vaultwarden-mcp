@@ -27,6 +27,6 @@ COPY . /app
 
 # Compile and install package in-place. Dev image carries the FULL agent runtime
 # (.[mcp], which includes .[mcp]) so it can run either server while debugging.
-RUN uv pip install --system --upgrade --verbose --no-cache --break-system-packages --prerelease=allow .[mcp]
+RUN uv pip install --system --upgrade --verbose --no-cache --break-system-packages .[mcp]
 
 CMD ["vaultwarden-mcp"]
