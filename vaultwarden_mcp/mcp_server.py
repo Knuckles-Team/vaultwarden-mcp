@@ -13,7 +13,7 @@ from .api import VaultwardenApi
 from .api._operation_manifest import OPERATIONS
 from .auth import get_client
 
-__version__ = "0.2.0"
+__version__ = "0.2.1"
 
 logger = logging.getLogger(name="MCP_Server")
 logger.setLevel(logging.INFO)
