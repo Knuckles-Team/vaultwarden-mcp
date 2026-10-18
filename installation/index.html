@@ -939,11 +939,6 @@
 <td>MCP runtime + mandatory <code>epistemic-graph[full]</code></td>
 </tr>
 <tr>
-<td><code>agent</code></td>
-<td><code>pip install "vaultwarden-mcp[agent]"</code></td>
-<td>Current agent runtime + Logfire tracing</td>
-</tr>
-<tr>
 <td><code>all</code></td>
 <td><code>pip install "vaultwarden-mcp[all]"</code></td>
 <td>Everything above</td>
@@ -963,10 +958,6 @@
 <td><code>vaultwarden-mcp</code></td>
 <td>Launch the MCP server</td>
 </tr>
-<tr>
-<td><code>vaultwarden-agent</code></td>
-<td>Launch the A2A agent server</td>
-</tr>
 </tbody>
 </table>
 <h3 id="optional-the-bitwarden-cli">Optional: the Bitwarden CLI<a class="headerlink" href="#optional-the-bitwarden-cli" title="Permanent link">&para;</a></h3>
@@ -983,7 +974,6 @@ installed by any extra above. The default <code>native</code> backend needs no e
 </span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>docker<span class="w"> </span>pull<span class="w"> </span><span class="s2">"</span><span class="nv">$IMAGE_REF</span><span class="s2">"</span>
 </span></code></pre></div>
 <p>See <a href="../deployment/">Deployment</a> for <code>docker run</code> / Compose usage. The repository's
-<code>README.md</code> documents the <code>:mcp</code> vs <code>:agent</code> build targets for the multi-stage
 <code>docker/Dockerfile</code>.</p>
 
 

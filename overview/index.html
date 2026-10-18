@@ -813,7 +813,7 @@
 <h1 id="vaultwarden-mcp-concept-overview">vaultwarden-mcp — Concept Overview<a class="headerlink" href="#vaultwarden-mcp-concept-overview" title="Permanent link">&para;</a></h1>
 <blockquote>
 <p><strong>Category</strong>: Integration | <strong>Ecosystem Role</strong>: MCP Server + A2A Agent
-Built on <a href="https://github.com/Knuckles-Team/agent-utilities"><code>agent-utilities</code></a> — the unified AGI Harness.</p>
+Built on <a href="https://github.com/Knuckles-Team/agent-connector-sdk"><code>agent-connector-sdk</code></a> — the unified AGI Harness.</p>
 </blockquote>
 <h2 id="description">Description<a class="headerlink" href="#description" title="Permanent link">&para;</a></h2>
 <p>Vaultwarden (Bitwarden-compatible) API client, Bitwarden CLI wrapper, and MCP Server +
@@ -835,7 +835,7 @@ A2A Agent for Agentic AI!</p>
   CLI), both implementing the same <code>VaultCrypto</code> protocol so higher-level operations —
   item read/write, deduplication — behave identically on either backend.</li>
 <li><strong>Metadata-only knowledge graph</strong>: <code>kg_ingest.py</code> builds the certified structural
-  projection consumed by Agent Utilities <code>source_sync</code>; it never writes independently
+  projection consumed by Agent Connector SDK <code>source_sync</code>; it never writes independently
   or emits item names, usernames, passwords, notes, URIs, or keys.</li>
 <li><strong>A2A Agent Server</strong>: a Pydantic-AI graph agent (console script <code>vaultwarden-agent</code>)
   that calls the MCP tool surface and exposes an AG-UI web interface.</li>
@@ -879,23 +879,23 @@ A2A Agent for Agentic AI!</p>
 </tr>
 <tr>
 <td style="text-align: left;"><code>AU-KG.ontology.federation-provider-leg</code></td>
-<td style="text-align: left;">Ontology federation via the <code>agent_utilities.ontology_providers</code> entry point</td>
-<td style="text-align: left;"><code>agent-utilities</code> (inherited)</td>
+<td style="text-align: left;">Ontology federation via the <code>agent_connector_sdk.ontology_providers</code> entry point</td>
+<td style="text-align: left;"><code>agent-connector-sdk</code> (inherited)</td>
 </tr>
 <tr>
 <td style="text-align: left;"><code>AU-KG.ingest.enterprise-source-extractor</code></td>
 <td style="text-align: left;">Source-sync validation and native commit authority for enterprise connectors</td>
-<td style="text-align: left;"><code>agent-utilities</code> (inherited)</td>
+<td style="text-align: left;"><code>agent-connector-sdk</code> (inherited)</td>
 </tr>
 <tr>
 <td style="text-align: left;"><code>AU-ECO.mcp.tool-mode-standardization</code></td>
 <td style="text-align: left;">Shared <code>MCP_TOOL_MODE</code> (<code>intent</code>/<code>condensed</code>/<code>verbose</code>/<code>both</code>) surface</td>
-<td style="text-align: left;"><code>agent-utilities</code> (inherited)</td>
+<td style="text-align: left;"><code>agent-connector-sdk</code> (inherited)</td>
 </tr>
 </tbody>
 </table>
 <blockquote>
-<p>📖 <strong>Full Registry</strong>: See <a href="https://github.com/Knuckles-Team/agent-utilities/blob/main/docs/overview.md"><code>agent-utilities/docs/overview.md</code></a> for the complete 5-Pillar concept index.</p>
+<p>📖 <strong>Full Registry</strong>: See <a href="https://github.com/Knuckles-Team/agent-connector-sdk/blob/main/docs/overview.md"><code>agent-connector-sdk/docs/overview.md</code></a> for the complete 5-Pillar concept index.</p>
 </blockquote>
 
 
