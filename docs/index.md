@@ -1,7 +1,7 @@
 # vaultwarden-mcp
 
 Vaultwarden (Bitwarden-compatible) **API client + Bitwarden CLI wrapper + MCP Server +
-A2A Agent** for the agent-utilities ecosystem — a typed, action-routed connector.
+A2A Agent** for the agent-connector-sdk ecosystem — a typed, action-routed connector.
 
 !!! info "Official documentation"
     This site is the canonical reference for `vaultwarden-mcp`, maintained alongside
@@ -28,7 +28,7 @@ runtime endpoint, credential reference, and TLS profile through `AgentConfig`.
 - :material-rocket-launch: **[Installation](installation.md)** — pip, source, extras, and the prebuilt Docker image.
 - :material-server-network: **[Deployment](deployment.md)** — run local transports or connect through an authenticated TLS ingress.
 - :material-console: **[Usage](usage.md)** — the MCP tools, the Python client, and the CLI.
-- :material-database-import: **[Metadata ingestion](ingestion.md)** — the read-only typed projection into Graph OS.
+- :material-database-import: **[Metadata ingestion](ingestion.md)** — the read-only typed projection into Arbora.
 - :material-database-cog: **[Backing Platform](platform.md)** — deploy Vaultwarden itself with Docker.
 - :material-sitemap: **[Overview](overview.md)** — the action-routed tool surface and architecture.
 - :material-graph: **[Concepts](concepts.md)** — the CONCEPT ID registry.

@@ -1,5 +1,5 @@
 #!/usr/bin/python
-from vaultwarden_mcp.agent_server import agent_server
+from vaultwarden_mcp.mcp_server import mcp_server
 
 if __name__ == "__main__":
-    agent_server()
+    mcp_server()

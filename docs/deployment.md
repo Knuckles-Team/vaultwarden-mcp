@@ -3,7 +3,6 @@
 This page covers running `vaultwarden-mcp` as long-lived servers.
 
 > `vaultwarden-mcp` ships both an **MCP server** (console script `vaultwarden-mcp`) and an
-> **A2A agent server** (console script `vaultwarden-agent`).
 
 <!-- BEGIN GENERATED: deployment-options -->
 ## Deployment Options
@@ -103,7 +102,6 @@ both required references have no default:
 
 ```bash
 docker compose -f docker/mcp.compose.yml up -d      # MCP server only
-docker compose -f docker/agent.compose.yml up -d    # MCP + agent
 ```
 
 ## Run the A2A agent server

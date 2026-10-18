@@ -149,7 +149,7 @@ def register_maintenance_tools(mcp: FastMCP):
         """Serve the certified metadata-only source projection.
 
         metadata_snapshot returns opaque identifiers, type codes, lifecycle
-        timestamps, counts, and typed relationships. Agent Utilities source_sync
+        timestamps, counts, and typed relationships. Agent Connector SDK source_sync
         is the only graph commit/checkpoint/reconcile authority. Backfeed is
         explicitly unsupported.
 

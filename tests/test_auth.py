@@ -1,4 +1,4 @@
-from types import MappingProxyType
+from types import MappingProxyType, SimpleNamespace
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -28,7 +28,8 @@ def _runtime(**credentials):
 
 def _no_delegation():
     return patch(
-        "agent_utilities.mcp.delegated_auth.is_delegation_enabled", return_value=False
+        "agent_connector_sdk.auth.delegation.DelegationSettings.from_settings",
+        return_value=SimpleNamespace(enabled=False),
     )
 
 
@@ -72,7 +73,7 @@ def test_missing_endpoint_is_rejected():
             "vaultwarden_mcp.auth.resolve_provider_runtime_profile",
             return_value=runtime,
         ),
-        pytest.raises(RuntimeError, match="endpoint"),
+        pytest.raises(RuntimeError, match="VAULTWARDEN_URL"),
     ):
         get_client()
 
@@ -114,3 +115,22 @@ def test_reset_locks_and_closes():
     reset_clients()
     crypto.lock.assert_called_once()
     runtime.close.assert_called_once()
+
+
+def test_runtime_resolves_from_settings_and_references(monkeypatch):
+    """VAULTWARDEN_* settings (inline or env:// references) feed the runtime."""
+    monkeypatch.setenv("VAULTWARDEN_URL", "https://vault.example.invalid")
+    monkeypatch.setenv("VAULTWARDEN_CLIENT_ID", "user.1")
+    monkeypatch.setenv("VAULTWARDEN_CLIENT_SECRET", "env://VW_TEST_SECRET")
+    monkeypatch.setenv("VW_TEST_SECRET", "s3cret")
+    monkeypatch.setenv("VAULTWARDEN_CRYPTO_BACKEND", "bw_cli")
+    tls = MagicMock()
+    with patch("vaultwarden_mcp.auth.resolve_tls_profile", return_value=tls):
+        runtime = auth_module.resolve_provider_runtime_profile()
+    assert runtime.endpoint == "https://vault.example.invalid"
+    assert runtime.tls is tls
+    assert runtime.credentials["CLIENT_ID"] == "user.1"
+    assert runtime.credentials["CLIENT_SECRET"] == "s3cret"
+    assert runtime.selectors["CRYPTO_BACKEND"] == "bw_cli"
+    runtime.close()
+    tls.cleanup.assert_called_once()

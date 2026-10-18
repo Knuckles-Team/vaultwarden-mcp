@@ -1,13 +1,13 @@
 # Metadata source contract
 
-Vaultwarden is a read-only structural source for the knowledge graph. Agent Utilities
+Vaultwarden is a read-only structural source for the knowledge graph. Agent Connector SDK
 calls the certified `vaultwarden-metadata` preset, which invokes
 `vaultwarden_metadata(action="metadata_snapshot")` and receives a
 `vaultwarden.metadata-entities/v1` envelope.
 
 ```mermaid
 sequenceDiagram
-    participant AU as Agent Utilities source_sync
+    participant AU as Agent Connector SDK source_sync
     participant MCP as vaultwarden_metadata
     participant VW as Vaultwarden API
     participant EG as Epistemic Graph
@@ -35,7 +35,7 @@ Delta calls accept the last committed ISO-8601 checkpoint. Changed item nodes re
 the locally resolved folder, organization, and collection closure required by their
 edges; an unchanged delta returns an empty, digest-bound structural no-op. Full calls
 return the complete projection. Reconcile calls also mark the sorted
-`live_ids` set as authoritative. Agent Utilities alone applies tombstones and
+`live_ids` set as authoritative. Agent Connector SDK alone applies tombstones and
 advances the checkpoint.
 
 Backfeed is unsupported. The preset and response both declare read-only operation, and
