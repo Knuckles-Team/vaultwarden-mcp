@@ -20,7 +20,7 @@
 ![PyPI - Wheel](https://img.shields.io/pypi/wheel/vaultwarden-mcp)
 ![PyPI - Implementation](https://img.shields.io/pypi/implementation/vaultwarden-mcp)
 
-*Version: 0.2.1*
+*Version: 0.2.2*
 
 > **Documentation** — Installation, deployment, and usage across the API, CLI, MCP,
 > and A2A agent interfaces are maintained in the
