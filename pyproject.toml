@@ -10,7 +10,7 @@ readme = "README.md"
 classifiers = [ "Development Status :: 4 - Beta", "License :: OSI Approved :: MIT License", "Environment :: Console", "Operating System :: POSIX :: Linux", "Programming Language :: Python :: 3",]
 requires-python = ">=3.12, <3.15"
 dependencies = [
-    "agent-connector-sdk[mcp]>=0.2.1,<1.0.0",
+    "agent-connector-sdk[mcp]>=0.3.18,<1.0.0",
     "argon2-cffi>=25.1.0,<26.0.0",
     "cryptography>=50.0.2,<51.0.0",
 ]
@@ -21,7 +21,7 @@ name = "Repository Maintainers"
 text = "MIT"
 
 [project.optional-dependencies]
-mcp = [ "agent-connector-sdk[mcp]>=0.2.1,<1.0.0",]
+mcp = [ "agent-connector-sdk[mcp]>=0.3.18,<1.0.0",]
 all = [
 ]
 test = [
@@ -54,6 +54,10 @@ vaultwarden-mcp = "vaultwarden_mcp.connectors"
 # reason: agent-connector-sdk isn't published on PyPI past 1.26.4, so this package must
 # resolve it from the local sibling checkout via a gitignored symlink, not a
 # version-range dependency.
+# The one declared connector identity: the fleet name (SDK-CONNECTOR-CONTROL-R071).
+[project.entry-points."agent_connector_sdk.connector"]
+vaultwarden-mcp = "vaultwarden_mcp"
+
 [tool.uv.workspace]
 members = ["."]
 
