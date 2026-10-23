@@ -7,7 +7,6 @@
         "vaultwarden-mcp"
       ],
       "env": {
-        "MCP_TOOL_MODE": "intent",
         "ACCOUNTSTOOL": "True",
         "ADMINTOOL": "True",
         "CIPHERSTOOL": "True",

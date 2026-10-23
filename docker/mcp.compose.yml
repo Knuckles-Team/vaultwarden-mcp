@@ -18,7 +18,6 @@ services:
       - PORT=8000
       - TRANSPORT=streamable-http
       - AUTH_TYPE=${AUTH_TYPE:-jwt}
-      - CONNECTOR_CONFIG_DIR=/etc/agent-connector-sdk
     ports:
       - "127.0.0.1:8000:8000"
     healthcheck:

@@ -11,7 +11,7 @@ overrides = [{ name = "fastmcp-slim", extras = ["client", "server"], specifier =
 
 [[package]]
 name = "agent-connector-sdk"
-version = "0.2.1"
+version = "0.3.18"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "anyio" },
@@ -23,8 +23,9 @@ dependencies = [
     { name = "pydantic" },
     { name = "pyyaml" },
 ]
+sdist = { url = "https://files.pythonhosted.org/packages/9b/12/0a8cc16e76872f16520143ac925e2989ce57ffd36ce9f27e079c2cbecdd3/agent_connector_sdk-0.3.18.tar.gz", hash = "sha256:86a912ee476f6e56329e34081e831634d40f07a083ca9b5291a1d4f57aaeb9e2", size = 757450, upload-time = "2026-10-23T03:38:51.862Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/2a/c0/f68a33b9344f5f7f2b9bb4a5baf281d6279f8189d04630d1544850d2a684/agent_connector_sdk-0.2.1-py3-none-any.whl", hash = "sha256:0bc8f997b05fbb4358c1e44cfd5d526c7715a8d4d0d14ba7624883c22d3a0719", size = 708662, upload-time = "2026-10-17T15:37:16.917Z" },
+    { url = "https://files.pythonhosted.org/packages/9d/9c/542f187c014e50cf24171a33d10ed4959c4616fa62a08477981b649407b0/agent_connector_sdk-0.3.18-py3-none-any.whl", hash = "sha256:7ee79bb2680490e047d25eaa6349b8778f427e2a09870aab6f342b7c8f677eec", size = 750933, upload-time = "2026-10-23T03:38:50.403Z" },
 ]
 
 [package.optional-dependencies]
@@ -1535,7 +1536,7 @@ wheels = [
 
 [[package]]
 name = "vaultwarden-mcp"
-version = "0.2.1"
+version = "0.2.2"
 source = { editable = "." }
 dependencies = [
     { name = "agent-connector-sdk", extra = ["mcp"] },
@@ -1561,8 +1562,8 @@ dev = [
 
 [package.metadata]
 requires-dist = [
-    { name = "agent-connector-sdk", extras = ["mcp"], specifier = ">=0.2.1,<1.0.0" },
-    { name = "agent-connector-sdk", extras = ["mcp"], marker = "extra == 'mcp'", specifier = ">=0.2.1,<1.0.0" },
+    { name = "agent-connector-sdk", extras = ["mcp"], specifier = ">=0.3.18,<1.0.0" },
+    { name = "agent-connector-sdk", extras = ["mcp"], marker = "extra == 'mcp'", specifier = ">=0.3.18,<1.0.0" },
     { name = "argon2-cffi", specifier = ">=25.1.0,<26.0.0" },
     { name = "cryptography", specifier = ">=50.0.2,<51.0.0" },
     { name = "pytest", marker = "extra == 'test'" },
