@@ -1,9 +1,6 @@
 {
   "api_version": "arbora.io/v1",
   "artifacts": {
-    "connector_manifest.yml": "38ec14f588210d0984128535dfb193c6501402a0c9e389949b92a5e803a6a5a9",
-    "vaultwarden_mcp/connectors/mcp_source_presets.json": "1226a2bc24b9df5efa963de9079cbc6f3e7f6dac6bb6036bd4222d92e38d2b4c",
-    "vaultwarden_mcp/connectors/tool_schema_fingerprints.json": "291bd23e060bf2d21a066df5d739f4da37de365ecd63e8f2efdf4df15060197f",
     "vaultwarden_mcp/ontology/fixtures/records.json": "3cbfa61cbccf1321136836121621078b03e15fe933a11d5c3ef535eec3539924",
     "vaultwarden_mcp/ontology/mappings/source.yaml": "2b33428e5b3fb6e8203bcc9e5e48777ffa674ed19d3f5e3a09169becd573a34b",
     "vaultwarden_mcp/ontology/migrations/manifest.json": "023b713d459e4c14274b468b1bece315970f23230882e9b2859563e5e6d444dd",

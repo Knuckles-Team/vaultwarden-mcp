@@ -119,5 +119,4 @@
 
 <http://knuckles.team/kg/vaultwarden> a owl:Ontology ;
     rdfs:label "Vaultwarden Ontology" ;
-    rdfs:comment "Vaultwarden password-manager metadata federated into the KG hub. No vault contents." ;
-    owl:imports <http://knuckles.team/kg> .
+    rdfs:comment "Vaultwarden password-manager metadata federated into the KG hub. No vault contents." .

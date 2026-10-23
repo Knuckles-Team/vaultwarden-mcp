@@ -4,13 +4,13 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "vaultwarden-mcp"
-version = "0.2.2"
+version = "0.2.3"
 description = "Vaultwarden API + Bitwarden vault MCP Server and A2A Agent for Agentic AI!"
 readme = "README.md"
 classifiers = [ "Development Status :: 4 - Beta", "License :: OSI Approved :: MIT License", "Environment :: Console", "Operating System :: POSIX :: Linux", "Programming Language :: Python :: 3",]
 requires-python = ">=3.12, <3.15"
 dependencies = [
-    "agent-connector-sdk[mcp]>=0.3.18,<1.0.0",
+    "agent-connector-sdk[mcp]>=0.4.1,<1.0.0",
     "argon2-cffi>=25.1.0,<26.0.0",
     "cryptography>=50.0.2,<51.0.0",
 ]
@@ -21,7 +21,7 @@ name = "Repository Maintainers"
 text = "MIT"
 
 [project.optional-dependencies]
-mcp = [ "agent-connector-sdk[mcp]>=0.3.18,<1.0.0",]
+mcp = [ "agent-connector-sdk[mcp]>=0.4.1,<1.0.0",]
 all = [
 ]
 test = [
@@ -38,9 +38,6 @@ vaultwarden-mcp = "vaultwarden_mcp.skills"
 
 [project.entry-points."agent_connector_sdk.ontology_providers"]
 vaultwarden-mcp = "vaultwarden_mcp.ontology"
-
-[project.entry-points."agent_connector_sdk.source_connector_providers"]
-vaultwarden-mcp = "vaultwarden_mcp.connectors"
 
 # CONCEPT:P0.2-nested-uv-workspace-fix — self-declare this package as its own uv
 # workspace root. Without this, uv's workspace discovery walks upward from this
