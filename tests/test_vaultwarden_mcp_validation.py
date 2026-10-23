@@ -2,15 +2,12 @@ import pytest
 
 from vaultwarden_mcp.mcp_server import get_mcp_instance
 
-EXPECTED_TOOL_NAMES = {
-    "vaultwarden_system",
+# Domains whose action-routed tool the SDK keeps whole (its actions cannot be enumerated).
+ROUTED_TOOL_NAMES = {
     "vaultwarden_accounts",
-    "vaultwarden_ciphers",
-    "vaultwarden_folders",
     "vaultwarden_organizations",
     "vaultwarden_sends",
     "vaultwarden_admin",
-    "vaultwarden_maintenance",
 }
 
 
@@ -26,8 +23,8 @@ def test_mcp_instance_registration(monkeypatch):
 
 
 @pytest.mark.concept("VW-ECO.mcp.tool-surface-registration")
-async def test_all_eight_intent_tools_registered(monkeypatch):
-    """Every one of the eight intent tools registers under the default mode.
+async def test_tool_surface_registered_per_operation(monkeypatch):
+    """The default surface registers per-operation tools plus the routed domain tools.
 
     CONCEPT:VW-ECO.mcp.tool-surface-registration
     """
@@ -35,5 +32,9 @@ async def test_all_eight_intent_tools_registered(monkeypatch):
     mcp, _args, _middlewares = get_mcp_instance()
     tools = await mcp.list_tools()
     names = {tool.name for tool in tools}
-    missing = EXPECTED_TOOL_NAMES - names
+    missing = ROUTED_TOOL_NAMES - names
     assert not missing, f"missing tools: {missing}"
+    assert any(
+        n.startswith("vaultwarden_ciphers_") for n in names
+    ), "ciphers split into per-operation tools"
+    assert len(names) > len(ROUTED_TOOL_NAMES)
