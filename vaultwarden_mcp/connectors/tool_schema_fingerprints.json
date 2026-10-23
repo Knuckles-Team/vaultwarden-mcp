@@ -1,8 +1,0 @@
-{
-  "algorithm": "agent-connector-sdk:mcp-tool-schema-compat:v1",
-  "connector": "vaultwarden-mcp",
-  "schema_version": "1",
-  "tools": {
-    "vaultwarden_metadata": "0f091aeb0384fbc36a7d29e40b06d10d5a8afd77f0a47388e878886043014c6c"
-  }
-}

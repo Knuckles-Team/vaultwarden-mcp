@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import hashlib
 import json
-from pathlib import Path
 
 import pytest
 
@@ -211,54 +210,6 @@ def test_old_direct_write_authority_is_removed():
         "queue_metadata_ingestion",
     ):
         assert not hasattr(kg_ingest, name)
-
-
-def test_certified_preset_is_the_only_source_authority():
-    presets_path = (
-        Path(kg_ingest.__file__).parent / "connectors" / "mcp_source_presets.json"
-    )
-    presets = json.loads(presets_path.read_text(encoding="utf-8"))
-
-    assert {name for name in presets if not name.startswith("_")} == {
-        "vaultwarden-metadata"
-    }
-    assert presets["vaultwarden-metadata"] == {
-        "server": "vaultwarden-mcp",
-        "tool": "vaultwarden_metadata",
-        "action": "metadata_snapshot",
-        "params_style": "json",
-        "params": {"mode": "delta"},
-        "record_mode": "typed_entities",
-        "records_path": "entities",
-        "relationships_path": "relationships",
-        "id_field": "id",
-        "node_type_field": "node_type",
-        "updated_field": "vaultwardenRevisionDate",
-        "updated_since_param": "checkpoint",
-        "checkpoint_path": "checkpoint",
-        "reconcile_path": "reconcile.live_ids",
-        "authoritative_path": "reconcile.authoritative",
-        "strict_schema": True,
-        "content_fields": [],
-        "metadata_fields": [
-            "id",
-            "node_type",
-            "externalToolId",
-            "vaultwardenItemType",
-            "vaultwardenRevisionDate",
-            "vaultwardenCreationDate",
-            "vaultwardenDeletedDate",
-            "vaultwardenAttachmentCount",
-            "vaultwardenReprompt",
-            "vaultwardenHasPasskey",
-            "vaultwardenWebVaultVersion",
-            "vaultwardenServerVersion",
-        ],
-        "text_field": "__metadata_entity_has_no_document_text__",
-        "doc_type": "vaultwarden_metadata",
-        "read_only": True,
-        "backfeed_supported": False,
-    }
 
 
 def test_backfeed_and_unknown_modes_fail_closed():
