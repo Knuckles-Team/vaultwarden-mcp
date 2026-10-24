@@ -1,6 +1,6 @@
 import pytest
 
-from vaultwarden_mcp.mcp_server import get_mcp_instance
+from agent_connector_sdk.connector import build_server
 
 # Domains whose action-routed tool the SDK keeps whole (its actions cannot be enumerated).
 ROUTED_TOOL_NAMES = {
@@ -18,7 +18,7 @@ def test_mcp_instance_registration(monkeypatch):
     CONCEPT:VW-ECO.mcp.system-operations
     """
     monkeypatch.setattr("sys.argv", ["vaultwarden-mcp"])
-    mcp, args, middlewares = get_mcp_instance()
+    _, mcp = build_server("vaultwarden_mcp", command_args=[])
     assert mcp is not None
 
 
@@ -29,7 +29,7 @@ async def test_tool_surface_registered_per_operation(monkeypatch):
     CONCEPT:VW-ECO.mcp.tool-surface-registration
     """
     monkeypatch.setattr("sys.argv", ["vaultwarden-mcp"])
-    mcp, _args, _middlewares = get_mcp_instance()
+    _, mcp = build_server("vaultwarden_mcp", command_args=[])
     tools = await mcp.list_tools()
     names = {tool.name for tool in tools}
     missing = ROUTED_TOOL_NAMES - names

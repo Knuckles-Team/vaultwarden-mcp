@@ -52,3 +52,23 @@ for module_name, extra_name in OPTIONAL_MODULES.items():
         globals()[f"_{extra_name.upper()}_AVAILABLE"] = False
 
 __all__.extend(["_MCP_AVAILABLE"])
+
+from agent_connector_sdk.connector import Connector
+
+from vaultwarden_mcp.api import VaultwardenApi
+from vaultwarden_mcp.api._operation_manifest import OPERATIONS
+from vaultwarden_mcp.auth import get_client
+
+connector = Connector(
+    tools="vaultwarden_mcp.mcp",
+    instructions="Vaultwarden MCP Server — intent and verbose tool surfaces.",
+    verbose_targets=(
+        {
+            "client_cls": VaultwardenApi,
+            "get_client": get_client,
+            "manifest": OPERATIONS,
+        },
+    ),
+)
+
+__all__ = ["connector"]
