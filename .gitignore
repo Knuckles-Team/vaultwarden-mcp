@@ -95,3 +95,8 @@ trace.txt
 # against its own tracked lock instead of the outer ecosystem workspace. Never
 # tracked.
 .uv-workspace-siblings/
+docker/Dockerfile
+docker/debug.Dockerfile
+docker/*.compose.yml
+vaultwarden_mcp/ontology/shapes/connector.shacl.ttl
+vaultwarden_mcp/ontology/certification.json
