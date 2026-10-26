@@ -62,8 +62,7 @@ def _secret(value: object) -> str:
 def resolve_provider_runtime_profile() -> ResolvedProviderRuntime:
     """Build the runtime from ``VAULTWARDEN_*`` settings and the TLS profile."""
     credentials = {
-        key: _secret(setting(f"VAULTWARDEN_{key}", ""))
-        for key in _CREDENTIAL_KEYS
+        key: _secret(setting(f"VAULTWARDEN_{key}", "")) for key in _CREDENTIAL_KEYS
     }
     selectors = {"CRYPTO_BACKEND": str(setting("VAULTWARDEN_CRYPTO_BACKEND", "") or "")}
     endpoint = str(setting("VAULTWARDEN_URL", "") or "").strip() or None
