@@ -223,9 +223,7 @@ def decrypt_string(value: str, key: SymmetricKey) -> str:
 
 def _oaep(enc_type: EncryptionType) -> rsa_padding.OAEP:
     algorithm: hashes.HashAlgorithm = (
-        hashes.SHA256()
-        if enc_type in _SHA256_RSA_TYPES
-        else hashes.SHA1()  # nosec B303 - Bitwarden RSA-OAEP type 4 mandates SHA-1
+        hashes.SHA256() if enc_type in _SHA256_RSA_TYPES else hashes.SHA1()  # nosec B303 - Bitwarden RSA-OAEP type 4 mandates SHA-1
     )
     return rsa_padding.OAEP(
         mgf=rsa_padding.MGF1(algorithm=algorithm), algorithm=algorithm, label=None
