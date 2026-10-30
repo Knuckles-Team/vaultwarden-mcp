@@ -3,11 +3,11 @@
 import json
 from typing import Any
 
-from agent_connector_sdk.mcp.action_dispatch import resolve_action
-from agent_connector_sdk.mcp.concurrency import run_blocking
 from fastmcp import Context, FastMCP
 from fastmcp.dependencies import Depends
 from pydantic import Field
+from scion_sdk.mcp.action_dispatch import resolve_action
+from scion_sdk.mcp.concurrency import run_blocking
 
 from ..auth import get_client, get_vault_crypto
 from ..vault.dedupe import DedupePlan, apply_plan, plan_deduplication
@@ -149,7 +149,7 @@ def register_maintenance_tools(mcp: FastMCP):
         """Serve the certified metadata-only source projection.
 
         metadata_snapshot returns opaque identifiers, type codes, lifecycle
-        timestamps, counts, and typed relationships. Agent Connector SDK source_sync
+        timestamps, counts, and typed relationships. Scion SDK source_sync
         is the only graph commit/checkpoint/reconcile authority. Backfeed is
         explicitly unsupported.
 

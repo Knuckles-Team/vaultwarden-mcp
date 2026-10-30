@@ -42,7 +42,7 @@ server via the Model Context Protocol — 281 REST operations across 13 domains 
 ciphers, folders, organizations, sends, two-factor, emergency access, events, admin,
 identity, icons, misc, public), a decrypted-vault layer for item/folder read and edit, and
 vault maintenance (deduplication, password rotation). It is built on the shared
-[`agent-connector-sdk`](https://github.com/Knuckles-Team/agent-connector-sdk) framework (auth, the
+[`scion-sdk`](https://github.com/Knuckles-Team/scion-sdk) framework (auth, the
 action router, telemetry, governance) for fleet consistency.
 
 - **Action-routed MCP tools** — eight domain tools (`vaultwarden_system`,
@@ -83,7 +83,7 @@ python -m pip install "vaultwarden-mcp[all]"     # + MCP server + A2A agent + te
 
 | Extra | Installs | Use when |
 |-------|----------|----------|
-| `vaultwarden-mcp[mcp]` | Connector-focused MCP server (`agent-connector-sdk` — FastMCP/FastAPI + `epistemic-graph[full]`) | The operator only run the **MCP server** (smallest install / image) |
+| `vaultwarden-mcp[mcp]` | Connector-focused MCP server (`scion-sdk` — FastMCP/FastAPI + `epistemic-graph[full]`) | The operator only run the **MCP server** (smallest install / image) |
 | `vaultwarden-mcp[all]` | Everything (`mcp` + `agent` + `logfire`) | Development / both surfaces |
 
 ### Console scripts
@@ -194,7 +194,7 @@ selection, bulk soft-remove apply) behaves identically in either case of backend
 (`:VaultwardenItem` subclasses, `:VaultwardenFolder`, `:VaultwardenCollection`,
 `:VaultwardenServer`) and relationships (`:vaultwardenInFolder`,
 `:vaultwardenInOrganization`, `:vaultwardenInCollection`) through the certified
-`vaultwarden-metadata` source preset. Agent Connector SDK `source_sync` is the sole
+`vaultwarden-metadata` source preset. Scion SDK `source_sync` is the sole
 graph commit, checkpoint, and reconcile authority. Only
 identifiers, type codes, lifecycle dates, counts, and relationships are accepted — every
 item name, username, password, note, URI, TOTP seed, custom field, attachment, folder
@@ -220,7 +220,7 @@ references in `AgentConfig`; do not place resolved values in MCP client JSON. Se
 <!-- MCP-CONFIG-EXAMPLES:START -->
 
 > **Install the connector-focused `[mcp]` extra.** Examples use `vaultwarden-mcp[mcp]` to add
-> FastMCP / FastAPI through `agent-connector-sdk`; the required Agent Connector SDK core
+> FastMCP / FastAPI through `scion-sdk`; the required Scion SDK core
 > still carries `epistemic-graph[full]`. The `[agent-runtime]` extra additionally
 > enables model orchestration.
 
@@ -387,7 +387,7 @@ Local engine autostart or an operator-configured remote engine is selected throu
 | `VAULTWARDEN_MCP_IMAGE` | — | e.g. registry.example.invalid/vaultwarden-mcp@sha256:<digest> |
 | `VAULTWARDEN_AGENT_IMAGE` | — | e.g. registry.example.invalid/vaultwarden-mcp@sha256:<digest> |
 
-#### Inherited agent-connector-sdk variables (apply to every connector)
+#### Inherited scion-sdk variables (apply to every connector)
 
 | Variable | Example | Description |
 |----------|---------|-------------|
@@ -409,7 +409,7 @@ Local engine autostart or an operator-configured remote engine is selected throu
 | `MODEL_ID` | — | Operator-configured model id for the agent |
 | `ENABLE_WEB_UI` | `True` | Serve the AG-UI web interface |
 
-_18 package + 17 inherited variable(s). Auto-generated from `.env.example` + the shared agent-connector-sdk set — do not edit._
+_18 package + 17 inherited variable(s). Auto-generated from `.env.example` + the shared scion-sdk set — do not edit._
 <!-- ENV-VARS-TABLE:END -->
 
 The `provider_configs.vaultwarden` profile referenced above (see `vaultwarden_mcp/auth.py`)
@@ -433,7 +433,7 @@ a literal value.
 Each tool is **action-routed**: pass an `action` and a JSON `params_json` payload. Tool
 domains can be toggled on or off with the listed environment variable. The table below is
 **auto-generated from the live server** by the `mcp-readme-table` pre-commit hook
-(`python -m agent_connector_sdk.mcp.readme_tools`) — do not edit it by hand.
+(`python -m scion_sdk.mcp.readme_tools`) — do not edit it by hand.
 
 <!-- MCP-TOOLS-TABLE:START -->
 

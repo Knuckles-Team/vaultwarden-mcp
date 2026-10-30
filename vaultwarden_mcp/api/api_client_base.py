@@ -23,9 +23,9 @@ from dataclasses import dataclass
 from typing import Any, Literal
 from urllib.parse import SplitResult, urljoin, urlsplit
 
-from agent_connector_sdk.http.client import create_http_client
-from agent_connector_sdk.http.options import HttpClientOptions
-from agent_connector_sdk.tls.profile import ResolvedTLSProfile
+from scion_sdk.http.client import create_http_client
+from scion_sdk.http.options import HttpClientOptions
+from scion_sdk.tls.profile import ResolvedTLSProfile
 
 _MAX_RESPONSE_BYTES = 16 * 1024 * 1024
 _MAX_RESPONSE_SECONDS = 60.0

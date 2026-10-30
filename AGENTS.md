@@ -17,7 +17,7 @@ Tool-neutral rules for any AI agent or human working in this repository. This bl
 
 ## Tech Stack & Architecture
 - Language/Version: Python 3.12–3.14
-- Core Libraries: `agent-connector-sdk`, `fastmcp`, `pydantic-ai`, `cryptography`, `argon2-cffi`
+- Core Libraries: `scion-sdk`, `fastmcp`, `pydantic-ai`, `cryptography`, `argon2-cffi`
 - Key principles: Functional patterns, Pydantic for data validation, asynchronous tool execution.
 - Architecture:
     - `vaultwarden_mcp/api/`: HTTP transport (`api_client_base.py`), the 281-operation
@@ -43,7 +43,7 @@ graph TD
     Agent --> Skills[Modular Skills]
     Agent --> MCP[MCP Server / FastMCP]
     MCP --> Client[API Client / Wrapper]
-    SourceSync[Agent Connector SDK source_sync] --> MCP
+    SourceSync[Scion SDK source_sync] --> MCP
     MCP --> Projection[Certified metadata projection]
     Projection --> SourceSync
     Client --> ExternalAPI([Vaultwarden Server])
@@ -97,7 +97,7 @@ vaultwarden-agent
 
 ## Code Style & Conventions
 **Always:**
-- Use `agent-connector-sdk` for common patterns (e.g., `create_mcp_server`, `create_agent_server`).
+- Use `scion-sdk` for common patterns (e.g., `create_mcp_server`, `create_agent_server`).
 - Define input/output models using Pydantic.
 - Include descriptive docstrings for all tools (they are used as tool descriptions for LLMs).
 - Check for optional dependencies using `try/except ImportError`.
@@ -105,7 +105,7 @@ vaultwarden-agent
 ## Dos and Don'ts
 **Do:**
 - Run `pre-commit` before pushing changes.
-- Use existing patterns from `agent-connector-sdk`.
+- Use existing patterns from `scion-sdk`.
 - Keep tools focused and idempotent where possible.
 - Prefer soft remove (trash) over permanent deletion; require `confirm: true` for anything
   destructive.
@@ -118,7 +118,7 @@ vaultwarden-agent
 ## Safety & Boundaries
 **Always do:**
 - Run lint/test via `pre-commit`.
-- Use `agent-connector-sdk` base classes.
+- Use `scion-sdk` base classes.
 
 **Ask first:**
 - Major refactors of `mcp_server.py` or `agent_server.py`.
@@ -126,14 +126,14 @@ vaultwarden-agent
 
 **Never do:**
 - Commit resolved provider values, certificate paths, or secrets.
-- Modify `agent-connector-sdk` or `universal-skills` files from within this package.
+- Modify `scion-sdk` or `universal-skills` files from within this package.
 - Print, log, or ingest vault contents (item names, usernames, passwords, notes, URIs,
   TOTP seeds, custom fields, attachments, or any key material) — see
   [Domain notes](#domain-notes-vaultwardenbitwarden-specific) below.
 
 ## When Stuck
 - Propose a plan first before making large changes.
-- Check `agent-connector-sdk` documentation for existing helpers.
+- Check `scion-sdk` documentation for existing helpers.
 
 ## Domain notes (Vaultwarden/Bitwarden-specific)
 
@@ -160,7 +160,7 @@ Read this before touching `auth.py`, `api/api_client_base.py`, `crypto/`, or
 - **KG ingestion is metadata-only, by construction, not by convention.** `kg_ingest.py`
   builds the certified `vaultwarden.metadata-entities/v1` projection from identifiers,
   type codes, lifecycle dates, counts, and relationship targets (see
-  `vaultwarden_mcp/ontology/vaultwarden.ttl`). Agent Connector SDK `source_sync` is the only
+  `vaultwarden_mcp/ontology/vaultwarden.ttl`). Scion SDK `source_sync` is the only
   graph commit/checkpoint/reconcile authority; do not restore a connector-local writer or
   a generic cipher-document preset. When adding a mapping, whitelist fields explicitly.
   If a field can hold user-entered vault content, it does not belong in the graph.
@@ -299,7 +299,7 @@ worktree root outside the repository-manager workspace scan.
 Working in parallel with other sessions/worktrees? **Reserve a concept id before you write its `CONCEPT:` marker** so two sessions never collide:
 
 ```bash
-agent-connector-sdk --json concept reserve --ns VW-ECO.mcp.<domain>-operations   # or a package prefix, e.g. VW
+scion-sdk --json concept reserve --ns VW-ECO.mcp.<domain>-operations   # or a package prefix, e.g. VW
 ```
 
 Full protocol (ledger, merge=union, reconcile, MCP/REST): <https://knuckles-team.github.io/agent-connector-sdk/concept_coordination/>

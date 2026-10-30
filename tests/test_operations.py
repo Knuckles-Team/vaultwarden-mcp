@@ -3,7 +3,7 @@
 Exercises the ``ROUTES`` catalog (``_routes.py``), the generated domain
 mixins + dispatch (``api_client_operations.py``), the derived MCP manifest
 (``_operation_manifest.py``), and their wiring into the fleet's verbose
-1:1 MCP tool surface (``agent_connector_sdk.mcp.verbose_tools``).
+1:1 MCP tool surface (``scion_sdk.mcp.verbose_tools``).
 """
 
 from __future__ import annotations
@@ -13,7 +13,7 @@ from typing import Any
 from unittest.mock import MagicMock
 
 import pytest
-from agent_connector_sdk.mcp.method_tools import _domain_methods
+from scion_sdk.mcp.method_tools import _domain_methods
 
 from vaultwarden_mcp.api._operation_manifest import OPERATIONS, OPERATIONS_BY_NAME
 from vaultwarden_mcp.api._routes import ROUTES, Route
@@ -239,6 +239,6 @@ def test_call_operation_rejects_unknown_names():
 
 
 def test_operations_base_class_name_ends_in_base():
-    # So agent_connector_sdk.mcp.verbose_tools treats it as base infrastructure,
+    # So scion_sdk.mcp.verbose_tools treats it as base infrastructure,
     # never a generated verbose tool.
     assert VaultwardenApiOperationsBase.__name__.endswith("Base")

@@ -1,11 +1,11 @@
 """Resolve connector configuration at the client boundary.
 
-Configuration is read at call time from the shared ``agent_connector_sdk.config``
+Configuration is read at call time from the shared ``scion_sdk.config``
 settings layer. Secret values may be given inline or as ``env://`` / secret-store
 references; references are resolved only here, at runtime:
 
 * ``VAULTWARDEN_URL`` and the ``VAULTWARDEN_TLS_PROFILE`` / ``VAULTWARDEN_CA_BUNDLE_REF``
-  family (``agent_connector_sdk.tls``) -- the server and its trust;
+  family (``scion_sdk.tls``) -- the server and its trust;
 * ``VAULTWARDEN_CLIENT_ID`` / ``VAULTWARDEN_CLIENT_SECRET`` -- the account's personal API key;
 * ``VAULTWARDEN_MASTER_PASSWORD`` -- needed only for decrypted vault operations;
 * ``VAULTWARDEN_ADMIN_TOKEN`` -- needed only for instance administration;
@@ -18,11 +18,11 @@ from dataclasses import dataclass, field
 from types import MappingProxyType
 from typing import Any
 
-from agent_connector_sdk.config import setting
-from agent_connector_sdk.credentials.resolution import resolve_secret_reference
-from agent_connector_sdk.exceptions import AuthError, UnauthorizedError
-from agent_connector_sdk.tls.profile import ResolvedTLSProfile
-from agent_connector_sdk.tls.resolve import resolve_tls_profile
+from scion_sdk.config import setting
+from scion_sdk.credentials.resolution import resolve_secret_reference
+from scion_sdk.exceptions import AuthError, UnauthorizedError
+from scion_sdk.tls.profile import ResolvedTLSProfile
+from scion_sdk.tls.resolve import resolve_tls_profile
 
 from .api import VaultwardenApi, VaultwardenCredentials
 from .crypto.base import VaultCrypto
@@ -95,12 +95,12 @@ def get_client() -> VaultwardenApi:
         raise RuntimeError("VAULTWARDEN_URL is required")
 
     import httpx
-    from agent_connector_sdk.auth.delegation import (
+    from scion_sdk.auth.delegation import (
         DelegationSettings,
         current_user_token,
         exchange_token,
     )
-    from agent_connector_sdk.exceptions import LoginRequiredError
+    from scion_sdk.exceptions import LoginRequiredError
 
     # --- Path 1: OIDC Delegation (RFC 8693 Token Exchange) ---
     delegation_settings = DelegationSettings.from_settings()

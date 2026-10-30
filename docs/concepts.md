@@ -2,7 +2,7 @@
 
 > **Prefix**: `VW` (OKF-CIS form `VW-<PILLAR>.<domain>.<concept>`)
 > **Version**: 0.1.0
-> **Bridge**: [`AU-ECO.mcp.tool-mode-standardization`](https://github.com/Knuckles-Team/agent-connector-sdk/blob/main/docs/overview.md) (shared MCP tool-mode surface)
+> **Bridge**: [`AU-ECO.mcp.tool-mode-standardization`](https://github.com/Knuckles-Team/scion-sdk/blob/main/docs/overview.md) (shared MCP tool-mode surface)
 
 This registry lists every OKF-CIS concept id this package defines or references. It is a
 superset of the `CONCEPT:VW-…` markers actually present in `vaultwarden_mcp/**/*.py` —
@@ -38,12 +38,12 @@ superset of the `CONCEPT:VW-…` markers actually present in `vaultwarden_mcp/**
 | `VW-OS.init.mcp-server-startup` | MCP Server Startup | `vaultwarden_mcp.mcp_server` imports cleanly at startup (`tests/test_startup.py`). |
 | `VW-OS.error.agent-problem-details` | Agent Problem Details | Errors render consistently as RFC-9457-style Problem Details across JSON, structured-markdown, and browser-HTML representations, with detail bounded and non-retryable denials never marked retryable (`tests/test_error_authority.py`). |
 
-## Cross-Project References (from agent-connector-sdk)
+## Cross-Project References (from scion-sdk)
 
 | Concept ID | Name | Origin |
 |------------|------|--------|
-| `AU-KG.ontology.federation-provider-leg` | Ontology Federation Provider Leg | agent-connector-sdk — `agent_connector_sdk.ontology_providers` entry point federates `vaultwarden_mcp/ontology/vaultwarden.ttl`. |
-| `AU-KG.ingest.enterprise-source-extractor` | Enterprise Source Extractor | agent-connector-sdk — `source_sync` validates and commits the certified structural projection emitted by `kg_ingest.py`. |
-| `AU-ECO.mcp.tool-mode-standardization` | MCP Tool-Mode Standardization | agent-connector-sdk — the shared `MCP_TOOL_MODE` (`intent`/`condensed`/`verbose`/`both`) surface every connector inherits. |
+| `AU-KG.ontology.federation-provider-leg` | Ontology Federation Provider Leg | scion-sdk — `scion_sdk.ontology_providers` entry point federates `vaultwarden_mcp/ontology/vaultwarden.ttl`. |
+| `AU-KG.ingest.enterprise-source-extractor` | Enterprise Source Extractor | scion-sdk — `source_sync` validates and commits the certified structural projection emitted by `kg_ingest.py`. |
+| `AU-ECO.mcp.tool-mode-standardization` | MCP Tool-Mode Standardization | scion-sdk — the shared `MCP_TOOL_MODE` (`intent`/`condensed`/`verbose`/`both`) surface every connector inherits. |
 
-> 📖 **Full Registry**: See [`agent-connector-sdk/docs/concepts.md`](https://github.com/Knuckles-Team/agent-connector-sdk/blob/main/docs/concepts.md) for the complete cross-ecosystem concept index.
+> 📖 **Full Registry**: See [`scion-sdk/docs/concepts.md`](https://github.com/Knuckles-Team/scion-sdk/blob/main/docs/concepts.md) for the complete cross-ecosystem concept index.

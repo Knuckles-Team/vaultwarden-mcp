@@ -1,6 +1,6 @@
 import pytest
 
-from agent_connector_sdk.connector import build_server
+from scion_sdk.connector import build_server
 
 # Domains whose action-routed tool the SDK keeps whole (its actions cannot be enumerated).
 ROUTED_TOOL_NAMES = {
