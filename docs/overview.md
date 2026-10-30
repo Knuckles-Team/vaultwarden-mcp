@@ -1,7 +1,7 @@
 # vaultwarden-mcp — Concept Overview
 
 > **Category**: Integration | **Ecosystem Role**: MCP Server + A2A Agent
-> Built on [`agent-connector-sdk`](https://github.com/Knuckles-Team/agent-connector-sdk) — the unified AGI Harness.
+> Built on [`scion-sdk`](https://github.com/Knuckles-Team/scion-sdk) — the unified AGI Harness.
 
 ## Description
 
@@ -26,7 +26,7 @@ This project follows the standardized agent-package pattern:
   CLI), both implementing the same `VaultCrypto` protocol so higher-level operations —
   item read/write, deduplication — behave identically on either backend.
 - **Metadata-only knowledge graph**: `kg_ingest.py` builds the certified structural
-  projection consumed by Agent Connector SDK `source_sync`; it never writes independently
+  projection consumed by Scion SDK `source_sync`; it never writes independently
   or emits item names, usernames, passwords, notes, URIs, or keys.
 - **A2A Agent Server**: a Pydantic-AI graph agent (console script `vaultwarden-agent`)
   that calls the MCP tool surface and exposes an AG-UI web interface.
@@ -43,8 +43,8 @@ This project implements or inherits the following ecosystem concepts. See
 | `VW-OS.crypto.native-vault-crypto` | Pure-Python Bitwarden key derivation and EncString handling | `vaultwarden-mcp` |
 | `VW-KG.ingest.metadata-only` | Vault contents never reach the knowledge graph | `vaultwarden-mcp` |
 | `VW-ECO.vault.deduplication` | Exact/loose duplicate planning and bulk soft-delete apply | `vaultwarden-mcp` |
-| `AU-KG.ontology.federation-provider-leg` | Ontology federation via the `agent_connector_sdk.ontology_providers` entry point | `agent-connector-sdk` (inherited) |
-| `AU-KG.ingest.enterprise-source-extractor` | Source-sync validation and native commit authority for enterprise connectors | `agent-connector-sdk` (inherited) |
-| `AU-ECO.mcp.tool-mode-standardization` | Shared `MCP_TOOL_MODE` (`intent`/`condensed`/`verbose`/`both`) surface | `agent-connector-sdk` (inherited) |
+| `AU-KG.ontology.federation-provider-leg` | Ontology federation via the `scion_sdk.ontology_providers` entry point | `scion-sdk` (inherited) |
+| `AU-KG.ingest.enterprise-source-extractor` | Source-sync validation and native commit authority for enterprise connectors | `scion-sdk` (inherited) |
+| `AU-ECO.mcp.tool-mode-standardization` | Shared `MCP_TOOL_MODE` (`intent`/`condensed`/`verbose`/`both`) surface | `scion-sdk` (inherited) |
 
-> 📖 **Full Registry**: See [`agent-connector-sdk/docs/overview.md`](https://github.com/Knuckles-Team/agent-connector-sdk/blob/main/docs/overview.md) for the complete 5-Pillar concept index.
+> 📖 **Full Registry**: See [`scion-sdk/docs/overview.md`](https://github.com/Knuckles-Team/scion-sdk/blob/main/docs/overview.md) for the complete 5-Pillar concept index.

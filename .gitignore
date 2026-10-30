@@ -91,7 +91,7 @@ trace.txt
 # Structural scanner runtime state.  The threshold/config files under
 
 # P0.2 (arbora-completion-program): materialized, dev-machine-only symlink to
-# the real agent-connector-sdk checkout, used so this package resolves standalone
+# the real scion-sdk checkout, used so this package resolves standalone
 # against its own tracked lock instead of the outer ecosystem workspace. Never
 # tracked.
 .uv-workspace-siblings/
@@ -100,3 +100,6 @@ docker/debug.Dockerfile
 docker/*.compose.yml
 vaultwarden_mcp/ontology/shapes/connector.shacl.ttl
 vaultwarden_mcp/ontology/certification.json
+
+# Spec status is computed at read time (pipelines-hook spec-status --write), never committed.
+specs/*/status.json

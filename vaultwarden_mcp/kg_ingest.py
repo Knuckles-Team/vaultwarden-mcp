@@ -5,7 +5,7 @@ relationships. It never emits item names, usernames, passwords, notes, URIs,
 TOTP seeds, custom fields, attachment bodies, folder names, collection names,
 send contents, or key material.
 
-This module does not write to the knowledge graph. Agent Connector SDK source_sync
+This module does not write to the knowledge graph. Scion SDK source_sync
 is the sole commit/checkpoint/reconcile authority and consumes the structural
 projection through the vaultwarden-metadata MCP preset.
 """

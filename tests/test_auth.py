@@ -28,7 +28,7 @@ def _runtime(**credentials):
 
 def _no_delegation():
     return patch(
-        "agent_connector_sdk.auth.delegation.DelegationSettings.from_settings",
+        "scion_sdk.auth.delegation.DelegationSettings.from_settings",
         return_value=SimpleNamespace(enabled=False),
     )
 

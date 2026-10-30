@@ -19,7 +19,7 @@ package owns the generated route catalog, HTTP transport, authentication,
 action-routed MCP tools, crypto backends, vault deduplication, metadata-only
 source projection, packaged skills, and ontology. Shared transport helpers,
 connector validation, release rendering, and delivery gates belong to
-`agent-connector-sdk` and `pipelines`.
+`scion-sdk` and `pipelines`.
 
 ## Repository map
 

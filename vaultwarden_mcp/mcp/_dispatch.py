@@ -14,8 +14,8 @@ from __future__ import annotations
 import json
 from typing import Any
 
-from agent_connector_sdk.mcp.action_dispatch import resolve_action
-from agent_connector_sdk.mcp.concurrency import run_blocking
+from scion_sdk.mcp.action_dispatch import resolve_action
+from scion_sdk.mcp.concurrency import run_blocking
 
 from ..api._routes import ROUTES, Route
 
