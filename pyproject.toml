@@ -16,6 +16,7 @@ dependencies = [
 ]
 [[project.authors]]
 name = "Repository Maintainers"
+email = "maintainers@knuckles.team"
 
 [project.license]
 text = "MIT"
