@@ -8,7 +8,7 @@ description: >-
 license: MIT
 tags: [vaultwarden, bitwarden, connector, development, testing, packaging, pages, specs]
 metadata:
-  author: Project Maintainers
+  author: Repository Maintainers
   version: '0.1.0'
 ---
 
