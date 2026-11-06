@@ -45,20 +45,15 @@ vault maintenance (deduplication, password rotation). It is built on the shared
 [`scion-sdk`](https://github.com/Knuckles-Team/scion-sdk) framework (auth, the
 action router, telemetry, governance) for fleet consistency.
 
-- **Action-routed MCP tools** — eight domain tools (`vaultwarden_system`,
-  `vaultwarden_accounts`, `vaultwarden_ciphers`, `vaultwarden_folders`,
-  `vaultwarden_organizations`, `vaultwarden_sends`, `vaultwarden_admin`,
-  `vaultwarden_maintenance`) each route to multiple underlying operations via an `action`
-  argument, keeping the tool surface small. Setting `MCP_TOOL_MODE=verbose` also
-  registers one fully-typed tool per API operation from the generated operation manifest.
+- **Typed MCP tools** — one typed tool per operation: `vaultwarden_ciphers_*` and `vaultwarden_folders_*` (decrypted items and folders), `vaultwarden_maintenance_*` (deduplication, password rotation and generation), `vaultwarden_metadata_snapshot`, and one typed tool per API route from the generated operation manifest. No tool takes an `action` argument.
 - **Two interfaces, one package** — use it as a Python **API client**, an **MCP server**
   (`stdio` / `streamable-http` / `sse`).
 - **Destructive operations require `confirm: true`.** Bulk item removal is soft by
   default — see [Architecture](#architecture) for the remove-route trap.
 - **Two crypto backends** — a pure-Python native implementation, or delegation to an
   installed Bitwarden CLI. See [Architecture](#architecture).
-- **Metadata-only knowledge-graph ingestion** — a Wire-First `vaultwarden_maintenance`
-  ingest action pushes identifiers, types, dates, counts, and relationships into the
+- **Metadata-only knowledge-graph ingestion** — the read-only `vaultwarden_metadata_snapshot`
+  tool serves identifiers, types, dates, counts, and relationships into the
   epistemic-graph Knowledge Graph as typed OWL nodes. Item names, usernames, passwords,
   notes, URIs, and every key stay out of the graph.
 - **Per-tool toggles** — enable or disable each tool domain with environment switches.
@@ -133,15 +128,12 @@ vaultwarden-mcp --transport streamable-http --host 127.0.0.1 --port 8000
 
 ### Calling an MCP tool
 
-Tools are action-routed — pass an `action` plus a JSON `params_json` string:
+Every operation is its own typed tool. Example:
 
 ```json
 {
-  "tool": "vaultwarden_system",
-  "arguments": {
-    "action": "version",
-    "params_json": "{}"
-  }
+  "tool": "vaultwarden_version",
+  "arguments": {}
 }
 ```
 
@@ -421,8 +413,8 @@ carries reference-only configuration through `AgentConfig`:
 | `endpoint_ref` | Must resolve to an HTTPS or loopback origin. |
 | `tls_profile` / `tls_profile_ref` | Exactly one of the two — a named trust policy, e.g. `{"system_trust": true, "ca_bundle_path": "..."}`. |
 | `credential_refs.CLIENT_ID` / `CLIENT_SECRET` | The account's personal API key (`client_credentials` grant). Upper-case aliases. |
-| `credential_refs.MASTER_PASSWORD` | Only needed for decrypted vault operations (`vaultwarden_ciphers`, `vaultwarden_folders`, maintenance). |
-| `credential_refs.ADMIN_TOKEN` | The plaintext instance admin token, only needed for `vaultwarden_admin`. |
+| `credential_refs.MASTER_PASSWORD` | Only needed for decrypted vault operations (`vaultwarden_ciphers_*`, `vaultwarden_folders_*`, maintenance). |
+| `credential_refs.ADMIN_TOKEN` | The plaintext instance admin token, only needed for the admin tools. |
 | `selector_refs.CRYPTO_BACKEND` | `native` (default) or `bw_cli` — see [Architecture](#architecture). |
 
 References are `env://NAME`, `vault://…`, or `secret://…`, resolved only at runtime — never
@@ -437,21 +429,16 @@ domains can be toggled on or off with the listed environment variable. The table
 
 <!-- MCP-TOOLS-TABLE:START -->
 
-#### Condensed action-routed tools (`MCP_TOOL_MODE=condensed`)
+#### Hand-written typed tools
 
-| MCP Tool | Toggle Env Var | Description |
-|----------|----------------|-------------|
-| `vaultwarden_accounts` | `ACCOUNTSTOOL` | Operate the account profile, two-factor methods, emergency access, |
-| `vaultwarden_admin` | `ADMINTOOL` | Administer the instance (users, config, diagnostics), plus |
-| `vaultwarden_ciphers` | `CIPHERSTOOL` | Read and write vault items (ciphers). |
-| `vaultwarden_folders` | `FOLDERSTOOL` | Read and write personal-vault folders. |
-| `vaultwarden_maintenance` | `MAINTENANCETOOL` | Plan/apply vault deduplication and rotate or generate passwords. |
-| `vaultwarden_metadata` | `MAINTENANCETOOL` | Serve the certified metadata-only source projection. |
-| `vaultwarden_organizations` | `ORGANIZATIONSTOOL` | Manage organizations, collections, members, groups, and policies, |
-| `vaultwarden_sends` | `SENDSTOOL` | Create, list, update, and remove Bitwarden Sends (text or file). |
-| `vaultwarden_system` | `SYSTEMTOOL` | Read Vaultwarden server liveness, version, and public configuration. |
+| MCP Tool | Description |
+|----------|-------------|
+| `vaultwarden_ciphers_list_items`, `_get_item`, `_create_item`, `_edit_item`, `_move_to_trash` | Read and write decrypted vault items. |
+| `vaultwarden_folders_list_folders`, `_create_folder` | Read and write personal-vault folders. |
+| `vaultwarden_maintenance_plan_deduplication`, `_apply_deduplication`, `_rotate_password`, `_generate_password` | Vault clean-up and password rotation. |
+| `vaultwarden_metadata_snapshot`, `vaultwarden_metadata_backfeed` | Certified metadata-only source projection; backfeed is refused. |
 
-#### Verbose 1:1 API-mapped tools (`MCP_TOOL_MODE=verbose` or `both`)
+#### 1:1 API-mapped tools
 
 <details>
 <summary>281 per-operation tools — one per public API method (click to expand)</summary>

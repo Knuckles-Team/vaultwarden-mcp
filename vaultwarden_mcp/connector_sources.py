@@ -12,7 +12,7 @@ from scion_sdk.ingest.live_declaration import source_meta
 
 SOURCES: tuple[Any, ...] = (
     source_meta(
-        tool="vaultwarden_metadata_metadata_snapshot",
+        tool="vaultwarden_metadata_snapshot",
         source_id="vaultwarden-metadata",
         record_type="vaultwarden_metadata",
         id_field="id",

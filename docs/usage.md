@@ -41,10 +41,7 @@ MCP tool surface and the action-routed domain tools use internally.
 
 ## As an MCP server
 
-Once [deployed](deployment.md), the server registers nine action-routed tools
-(`vaultwarden_system`, `vaultwarden_accounts`, `vaultwarden_ciphers`,
-`vaultwarden_folders`, `vaultwarden_organizations`, `vaultwarden_sends`,
-`vaultwarden_admin`, `vaultwarden_maintenance`, `vaultwarden_metadata`). The
+Once [deployed](deployment.md), the server registers one typed tool per operation: `vaultwarden_ciphers_*` and `vaultwarden_folders_*` (decrypted items and folders), `vaultwarden_maintenance_*` (deduplication, password rotation and generation), `vaultwarden_metadata_snapshot`, and one typed tool per API route. The
 read-only metadata tool serves the [certified structural source](ingestion.md); the
 other tools retain their existing domain controls. Setting `MCP_TOOL_MODE=verbose`
 also registers one

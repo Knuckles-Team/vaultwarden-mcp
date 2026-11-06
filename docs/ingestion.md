@@ -2,13 +2,13 @@
 
 Vaultwarden is a read-only structural source for the knowledge graph. Scion SDK
 calls the certified `vaultwarden-metadata` preset, which invokes
-`vaultwarden_metadata(action="metadata_snapshot")` and receives a
+`vaultwarden_metadata_snapshot` and receives a
 `vaultwarden.metadata-entities/v1` envelope.
 
 ```mermaid
 sequenceDiagram
     participant AU as Scion SDK source_sync
-    participant MCP as vaultwarden_metadata
+    participant MCP as vaultwarden_metadata_snapshot
     participant VW as Vaultwarden API
     participant EG as Epistemic Graph
 
