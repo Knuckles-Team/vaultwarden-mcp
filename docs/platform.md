@@ -58,5 +58,5 @@ docker compose -f platform.compose.yml up -d
 3. Populate `provider_configs.vaultwarden` in `AgentConfig` — `endpoint_ref` pointing at
    this instance, the credential references above, a TLS profile once the ingress is
    TLS-stop, and `MASTER_PASSWORD` / `ADMIN_TOKEN` references only for the tool
-   groups that need them (decrypted vault operations, and `vaultwarden_admin`,
+   groups that need them (decrypted vault operations, and the admin tools,
    respectively).

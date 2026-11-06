@@ -4,8 +4,7 @@ ontology_source: vaultwarden
 sync:
 - preset: vaultwarden-metadata
   server: vaultwarden-mcp
-  tool: vaultwarden_metadata
-  action: metadata_snapshot
+  tool: vaultwarden_metadata_snapshot
   records_path: entities
   id_field: id
   title_field: null

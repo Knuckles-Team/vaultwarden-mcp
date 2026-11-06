@@ -18,7 +18,7 @@ This project follows the standardized agent-package pattern:
   tool modules) for cleaner organization.
 - **Dynamic Tool Registration**: nine action-routed dynamic tools — `system`,
   `accounts`, `ciphers`, `folders`, `organizations`, `sends`, `admin`, `maintenance` —
-  plus the read-only `vaultwarden_metadata` source surface. Registration tags remain
+  plus the read-only `vaultwarden_metadata_snapshot` source surface. Registration tags remain
   strictly lowercase and togglable with a `*TOOL` environment flag. Setting
   `MCP_TOOL_MODE=verbose` also exposes one fully-typed tool per API operation.
 - **Two crypto backends behind one contract**: `native` (pure-Python Bitwarden key

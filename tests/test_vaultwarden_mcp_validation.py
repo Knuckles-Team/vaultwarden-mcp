@@ -2,12 +2,12 @@ import pytest
 
 from scion_sdk.connector import build_server
 
-# Domains whose action-routed tool the SDK keeps whole (its actions cannot be enumerated).
-ROUTED_TOOL_NAMES = {
-    "vaultwarden_accounts",
-    "vaultwarden_organizations",
-    "vaultwarden_sends",
-    "vaultwarden_admin",
+# Typed tools that are not generated from an API route.
+TYPED_TOOL_NAMES = {
+    "vaultwarden_ciphers_list_items",
+    "vaultwarden_folders_create_folder",
+    "vaultwarden_maintenance_plan_deduplication",
+    "vaultwarden_metadata_snapshot",
 }
 
 
@@ -24,7 +24,7 @@ def test_mcp_instance_registration(monkeypatch):
 
 @pytest.mark.concept("VW-ECO.mcp.tool-surface-registration")
 async def test_tool_surface_registered_per_operation(monkeypatch):
-    """The default surface registers per-operation tools plus the routed domain tools.
+    """The default surface registers one typed tool per operation, none action-routed.
 
     CONCEPT:VW-ECO.mcp.tool-surface-registration
     """
@@ -32,9 +32,9 @@ async def test_tool_surface_registered_per_operation(monkeypatch):
     _, mcp = build_server("vaultwarden_mcp", command_args=[])
     tools = await mcp.list_tools()
     names = {tool.name for tool in tools}
-    missing = ROUTED_TOOL_NAMES - names
+    missing = TYPED_TOOL_NAMES - names
     assert not missing, f"missing tools: {missing}"
-    assert any(
-        n.startswith("vaultwarden_ciphers_") for n in names
-    ), "ciphers split into per-operation tools"
-    assert len(names) > len(ROUTED_TOOL_NAMES)
+    for tool in tools:
+        assert "action" not in tool.parameters.get("properties", {}), tool.name
+        assert "params_json" not in tool.parameters.get("properties", {}), tool.name
+    assert len(names) > len(TYPED_TOOL_NAMES)

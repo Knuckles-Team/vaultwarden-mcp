@@ -14,14 +14,14 @@ superset of the `CONCEPT:VW-…` markers actually present in `vaultwarden_mcp/**
 
 | Concept ID | Name | Description |
 |------------|------|--------------|
-| `VW-ECO.mcp.system-operations` | System Operations | `vaultwarden_system` tool: server liveness, version, and public config. |
-| `VW-ECO.mcp.account-operations` | Account Operations | `vaultwarden_accounts` tool: profile, two-factor, emergency access, and events. |
-| `VW-ECO.mcp.cipher-operations` | Cipher Operations | `vaultwarden_ciphers` tool: decrypted item list/get/create/edit, move-to-trash, and raw cipher routes. |
-| `VW-ECO.mcp.folder-operations` | Folder Operations | `vaultwarden_folders` tool: personal-vault folder CRUD. |
-| `VW-ECO.mcp.organization-operations` | Organization Operations | `vaultwarden_organizations` tool: organizations, collections, members, and the public API. |
-| `VW-ECO.mcp.send-operations` | Send Operations | `vaultwarden_sends` tool: Bitwarden Send create/list/remove. |
-| `VW-ECO.mcp.admin-operations` | Admin Operations | `vaultwarden_admin` tool: instance admin panel, identity, and icons. |
-| `VW-ECO.mcp.maintenance-operations` | Maintenance Operations | `vaultwarden_maintenance` tool: plan/apply deduplication, rotate/generate password, ingest metadata. |
+| `VW-ECO.mcp.system-operations` | System Operations | `vaultwarden_alive`, `vaultwarden_version` and `vaultwarden_config` tools: server liveness, version, and public config. |
+| `VW-ECO.mcp.account-operations` | Account Operations | account route tools: profile, two-factor, emergency access, and events. |
+| `VW-ECO.mcp.cipher-operations` | Cipher Operations | `vaultwarden_ciphers_*` tools: decrypted item list/get/create/edit, move-to-trash, and raw cipher routes. |
+| `VW-ECO.mcp.folder-operations` | Folder Operations | `vaultwarden_folders_*` tools: personal-vault folder CRUD. |
+| `VW-ECO.mcp.organization-operations` | Organization Operations | organization route tools: organizations, collections, members, and the public API. |
+| `VW-ECO.mcp.send-operations` | Send Operations | Send route tools: Bitwarden Send create/list/remove. |
+| `VW-ECO.mcp.admin-operations` | Admin Operations | admin route tools: instance admin panel, identity, and icons. |
+| `VW-ECO.mcp.maintenance-operations` | Maintenance Operations | `vaultwarden_maintenance_*` tools: plan/apply deduplication, rotate/generate password, ingest metadata. |
 | `VW-OS.identity.provider-profile` | Provider Profile | Reference-only `provider_configs.vaultwarden` (`endpoint_ref`, `tls_profile`/`tls_profile_ref`, upper-case `credential_refs` aliases `CLIENT_ID`/`CLIENT_SECRET`/`MASTER_PASSWORD`/`ADMIN_TOKEN`, `selector_refs.CRYPTO_BACKEND`). |
 | `VW-OS.crypto.native-vault-crypto` | Native Vault Crypto | Pure-Python Bitwarden key derivation (PBKDF2-SHA256/Argon2id), HKDF stretching, AES-256-CBC + HMAC-SHA256 EncStrings, and RSA-OAEP key unwrap, validated against Bitwarden's published SDK test vectors. |
 | `VW-OS.crypto.bw-cli-vault-crypto` | Bitwarden CLI Vault Crypto | Decrypted-vault backend delegating to an installed `bw` CLI in a private per-instance data directory. |

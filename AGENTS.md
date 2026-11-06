@@ -23,10 +23,9 @@ Tool-neutral rules for any AI agent or human working in this repository. This bl
     - `vaultwarden_mcp/api/`: HTTP transport (`api_client_base.py`), the 281-operation
       route catalog (`_routes.py`), and the generated verbose-tool parameter manifest
       (`_operation_manifest.py`).
-    - `vaultwarden_mcp/mcp/`: Modular folder for action-routed dynamic MCP tool tags
-      (`vaultwarden_system`, `vaultwarden_accounts`, `vaultwarden_ciphers`,
-      `vaultwarden_folders`, `vaultwarden_organizations`, `vaultwarden_sends`,
-      `vaultwarden_admin`, `vaultwarden_maintenance`, `vaultwarden_metadata`).
+    - `vaultwarden_mcp/mcp/`: Modular folder for the hand-written typed MCP tools
+      (`vaultwarden_ciphers_*`, `vaultwarden_folders_*`, `vaultwarden_maintenance_*`,
+      `vaultwarden_metadata_*`); route tools are generated from the operation manifest.
     - `vaultwarden_mcp/crypto/`: Pluggable decrypted-vault backends (`native`, `bw_cli`)
       behind the `VaultCrypto` protocol in `crypto/base.py`.
     - `vaultwarden_mcp/vault/dedupe.py`: Pure planning + bulk-soft-remove apply for

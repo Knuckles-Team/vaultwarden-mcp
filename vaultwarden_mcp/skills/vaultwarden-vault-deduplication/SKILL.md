@@ -22,14 +22,15 @@ metadata:
 
 # Vaultwarden Vault Deduplication
 
-Deduplicate one vault account with the `vaultwarden_maintenance` tool.
+Deduplicate one vault account with the `vaultwarden_maintenance_plan_deduplication` and
+`vaultwarden_maintenance_apply_deduplication` tools.
 
 ## How it works
 
-- `action=plan_deduplication` unlocks the account, compares decrypted items, and returns
+- `vaultwarden_maintenance_plan_deduplication` unlocks the account, compares decrypted items, and returns
   identifiers only: how many items were scanned, the duplicate groups, and which copy of
   each group is kept. Nothing changes.
-- `action=apply_deduplication` recomputes the plan and moves every extra copy to trash in
+- `vaultwarden_maintenance_apply_deduplication` (needs `confirm=true`) recomputes the plan and moves every extra copy to trash in
   bulk. It refuses plans built in loose mode.
 - Exact matching is the default and the only mode that may be applied. Loose matching
   (`loose=true`) compares only name, username, and URIs; its groups can differ in
