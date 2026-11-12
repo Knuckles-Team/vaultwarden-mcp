@@ -54,7 +54,7 @@ action router, telemetry, governance) for fleet consistency.
   installed Bitwarden CLI. See [Architecture](#architecture).
 - **Metadata-only knowledge-graph ingestion** — the read-only `vaultwarden_metadata_snapshot`
   tool serves identifiers, types, dates, counts, and relationships into the
-  epistemic-graph Knowledge Graph as typed OWL nodes. Item names, usernames, passwords,
+  medulla Knowledge Graph as typed OWL nodes. Item names, usernames, passwords,
   notes, URIs, and every key stay out of the graph.
 - **Per-tool toggles** — enable or disable each tool domain with environment switches.
 - **Enterprise-ready** — OTEL/Langfuse telemetry and optional Eunomia access governance.
@@ -67,7 +67,7 @@ action router, telemetry, governance) for fleet consistency.
 uvx --from "vaultwarden-mcp[mcp]" vaultwarden-mcp      # MCP server + full graph engine
 ```
 
-> Every supported install includes `epistemic-graph[full]`. The `[mcp]` extra adds
+> Every supported install includes `medulla[full]`. The `[mcp]` extra adds
 
 ### Install with `pip`
 
@@ -78,7 +78,7 @@ python -m pip install "vaultwarden-mcp[all]"     # + MCP server + A2A agent + te
 
 | Extra | Installs | Use when |
 |-------|----------|----------|
-| `vaultwarden-mcp[mcp]` | Connector-focused MCP server (`scion-sdk` — FastMCP/FastAPI + `epistemic-graph[full]`) | The operator only run the **MCP server** (smallest install / image) |
+| `vaultwarden-mcp[mcp]` | Connector-focused MCP server (`scion-sdk` — FastMCP/FastAPI + `medulla[full]`) | The operator only run the **MCP server** (smallest install / image) |
 | `vaultwarden-mcp[all]` | Everything (`mcp` + `agent` + `logfire`) | Development / both surfaces |
 
 ### Console scripts
@@ -95,7 +95,7 @@ One multi-stage `docker/Dockerfile` builds the MCP-only image (`--target mcp`):
 
 | Local build tag | Build target | Contents | Entrypoint |
 |-----------|--------------|----------|------------|
-| `vaultwarden-mcp:mcp-local` | `--target mcp` | `vaultwarden-mcp[mcp]` — MCP serving runtime + `epistemic-graph[full]` | `vaultwarden-mcp` |
+| `vaultwarden-mcp:mcp-local` | `--target mcp` | `vaultwarden-mcp[mcp]` — MCP serving runtime + `medulla[full]` | `vaultwarden-mcp` |
 
 ```bash
 docker build --target mcp   -t vaultwarden-mcp:mcp-local docker/
@@ -213,7 +213,7 @@ references in `AgentConfig`; do not place resolved values in MCP client JSON. Se
 
 > **Install the connector-focused `[mcp]` extra.** Examples use `vaultwarden-mcp[mcp]` to add
 > FastMCP / FastAPI through `scion-sdk`; the required Scion SDK core
-> still carries `epistemic-graph[full]`. The `[agent-runtime]` extra additionally
+> still carries `medulla[full]`. The `[agent-runtime]` extra additionally
 > enables model orchestration.
 
 #### stdio Transport (local IDEs — Cursor, Claude Desktop, VS Code)
@@ -342,14 +342,14 @@ copy-paste `mcp_config.json` for all four transports — **stdio**, **streamable
   `MCP_ALLOWED_HOSTS` in `AgentConfig`.
 <!-- END GENERATED: additional-deployment-options -->
 
-## Knowledge-graph database (`epistemic-graph`)
+## Knowledge-graph database (`medulla`)
 
-Every image embeds the **epistemic-graph[full]** engine. For production — or to
+Every image embeds the **medulla[full]** engine. For production — or to
 share one knowledge graph across multiple
-agents — run **epistemic-graph as its own database container** and point the agent at it.
+agents — run **medulla as its own database container** and point the agent at it.
 Deployment recipes (single-node + Raft HA), connection config, and the full database
 architecture (with diagrams) are in the
-[epistemic-graph deployment guide](https://knuckles-team.github.io/epistemic-graph/deployment/).
+[medulla deployment guide](https://knuckles-team.github.io/medulla/deployment/).
 Local engine autostart or an operator-configured remote engine is selected through AgentConfig.
 
 ## Environment Variables

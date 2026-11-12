@@ -49,7 +49,7 @@ class FakeSession:
 
 def _client(responses, **credentials):
     with patch(
-        "vaultwarden_mcp.api.api_client_base.create_http_client",
+        "vaultwarden_mcp.api.api_client_base.build_http_client",
         return_value=FakeSession(responses),
     ):
         return VaultwardenApi(
@@ -189,7 +189,7 @@ def test_governed_client_pins_egress_to_the_configured_host():
         captured["options"] = options
         return FakeSession([])
 
-    with patch("vaultwarden_mcp.api.api_client_base.create_http_client", capture):
+    with patch("vaultwarden_mcp.api.api_client_base.build_http_client", capture):
         VaultwardenApi(
             base_url="https://Vault.Example.Invalid/",
             tls_profile=_tls_profile(),
@@ -217,7 +217,7 @@ def test_governed_client_does_not_pin_behind_a_proxy():
             captured["options"] = options
             return FakeSession([])
 
-        with patch("vaultwarden_mcp.api.api_client_base.create_http_client", capture):
+        with patch("vaultwarden_mcp.api.api_client_base.build_http_client", capture):
             VaultwardenApi(
                 base_url="https://vault.example.invalid",
                 tls_profile=proxied,

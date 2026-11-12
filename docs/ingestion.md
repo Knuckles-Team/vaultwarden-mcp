@@ -10,7 +10,7 @@ sequenceDiagram
     participant AU as Scion SDK source_sync
     participant MCP as vaultwarden_metadata_snapshot
     participant VW as Vaultwarden API
-    participant EG as Epistemic Graph
+    participant EG as Medulla
 
     AU->>MCP: metadata_snapshot(mode, checkpoint)
     MCP->>VW: sync_vault + server metadata
