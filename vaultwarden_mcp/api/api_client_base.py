@@ -23,7 +23,7 @@ from dataclasses import dataclass
 from typing import Any, Literal
 from urllib.parse import SplitResult, urljoin, urlsplit
 
-from scion_sdk.http.client import create_http_client
+from scion_sdk.http.client import build_http_client
 from scion_sdk.http.options import HttpClientOptions
 from scion_sdk.tls.profile import ResolvedTLSProfile
 
@@ -159,7 +159,7 @@ class VaultwardenApiBase:
         # A proxied or trust_env profile cannot be DNS-pinned; the SDK refuses the
         # private-host allow-list without pinning, so both are set together.
         pin = not tls_profile.proxy_url and not tls_profile.trust_env
-        self.session = create_http_client(
+        self.session = build_http_client(
             HttpClientOptions(
                 base_url=self.base_url,
                 timeout=_REQUEST_TIMEOUT_S,

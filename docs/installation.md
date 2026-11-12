@@ -20,7 +20,7 @@ pip install vaultwarden-mcp
 
 | Extra | Install | Pulls in |
 |---|---|---|
-| `mcp` | `pip install "vaultwarden-mcp[mcp]"` | MCP runtime + mandatory `epistemic-graph[full]` |
+| `mcp` | `pip install "vaultwarden-mcp[mcp]"` | MCP runtime + mandatory `medulla[full]` |
 | `all` | `pip install "vaultwarden-mcp[all]"` | Everything above |
 
 ### Console scripts
