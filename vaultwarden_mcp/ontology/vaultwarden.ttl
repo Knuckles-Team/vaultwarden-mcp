@@ -1,4 +1,5 @@
-@prefix : <http://knuckles.team/kg#> .
+@prefix : <https://knuckles-team.github.io/ontology/connector/vaultwarden#> .
+@prefix core: <https://knuckles-team.github.io/ontology/core#> .
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
@@ -12,12 +13,12 @@
 # colliding with other vault providers (e.g. :VaultServer).
 
 :VaultwardenServer a owl:Class ;
-    rdfs:subClassOf :Server ;
+    rdfs:subClassOf core:Server ;
     rdfs:label "Vaultwarden Server" ;
     rdfs:comment "A Bitwarden-compatible server instance." .
 
 :VaultwardenItem a owl:Class ;
-    rdfs:subClassOf :Credential ;
+    rdfs:subClassOf core:Credential ;
     rdfs:label "Vaultwarden Item" ;
     rdfs:comment "A vault item (cipher). Only its identity, type, and lifecycle metadata are modelled." .
 
@@ -42,16 +43,16 @@
     rdfs:label "Vaultwarden SSH Key Item" .
 
 :VaultwardenFolder a owl:Class ;
-    rdfs:subClassOf :Collection ;
+    rdfs:subClassOf core:Collection ;
     rdfs:label "Vaultwarden Folder" ;
     rdfs:comment "A personal folder. Its name is encrypted and never modelled." .
 
 :VaultwardenOrganization a owl:Class ;
-    rdfs:subClassOf :Organization ;
+    rdfs:subClassOf core:Organization ;
     rdfs:label "Vaultwarden Organization" .
 
 :VaultwardenCollection a owl:Class ;
-    rdfs:subClassOf :Collection ;
+    rdfs:subClassOf core:Collection ;
     rdfs:label "Vaultwarden Collection" ;
     rdfs:comment "An organization collection. Its name is encrypted and never modelled." .
 
@@ -122,6 +123,6 @@
     rdfs:domain :VaultwardenServer ;
     rdfs:range xsd:string .
 
-<http://knuckles.team/kg/vaultwarden> a owl:Ontology ;
+<https://knuckles-team.github.io/ontology/connector/vaultwarden> a owl:Ontology ;
     rdfs:label "Vaultwarden Ontology" ;
     rdfs:comment "Vaultwarden password-manager metadata federated into the KG hub. No vault contents." .
