@@ -19,6 +19,20 @@ The vault is end-to-end encrypted. The vaultwarden_ciphers_* and vaultwarden_fol
 - Trash before delete; purge only on explicit request.
 - Destructive tools take confirm=true; pass it only after the person agrees.
 
+## Steps
+1. Check the server with `vaultwarden_alive`. Verify it responds before any vault call.
+2. List before you act with `vaultwarden_ciphers_list_items` or `vaultwarden_folders_list_folders`. Verify the target item id appears in the result.
+3. Make the change with the matching tool, for example `vaultwarden_ciphers_edit_item` or `vaultwarden_ciphers_move_to_trash`. Verify the call returns success for that item id.
+4. For a destructive tool such as `vaultwarden_delete_cipher`, trash first, ask the person, and pass `confirm=true` only after they agree. Verify the item is in the trash before any purge.
+5. Read the item back with `vaultwarden_ciphers_get_item`. Verify the change took effect without copying decrypted content anywhere but to the requester.
+
+## Failure recovery
+| Failure | Cause | Recovery |
+|---------|-------|----------|
+| Item not found | Wrong `item_id`, or the item is already in the trash | List again with `vaultwarden_ciphers_list_items` using `include_trash` and copy the id |
+| Destructive call refused | `confirm=true` was not passed | Ask the person to confirm, then call the same tool with `confirm=true` |
+| Server unreachable or auth rejected | Credentials unset or server down | Call `vaultwarden_alive` and `vaultwarden_version`; ask the operator to fix the credential aliases if they fail |
+
 ## Task workflows
 
 ### read-vault-items

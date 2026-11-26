@@ -19,6 +19,20 @@ Organization objects are addressed by org_id; list before you change.
 - Bulk tools take an explicit id list only.
 - Read the object back after each change.
 
+## Steps
+1. Read the organization with `vaultwarden_get_organization` (`org_id`). Verify the returned organization is the one the person named.
+2. List its members with `vaultwarden_get_members`. Verify the target member id appears and note the owners.
+3. Apply the change with the matching tool, such as `vaultwarden_put_member` or `vaultwarden_revoke_member`, giving explicit ids only. Verify the last owner is never the one being removed or revoked.
+4. For a destructive tool such as `vaultwarden_delete_member`, ask the person and pass `confirm=true` only after they agree. Verify the member id matches what they approved.
+5. Read the object back with `vaultwarden_get_members`. Verify the member's status or role now shows the change.
+
+## Failure recovery
+| Failure | Cause | Recovery |
+|---------|-------|----------|
+| Not-found or forbidden error | Wrong `org_id`, or the caller lacks rights | Re-read `vaultwarden_get_organization` for the correct `org_id`, and ask the operator for an owner credential if rights are missing |
+| Destructive call refused | `confirm=true` was not passed | Ask the person to confirm, then call the same tool with `confirm=true` |
+| Member not listed | Wrong `member_id` | Call `vaultwarden_get_members` again and copy the id from that output |
+
 ## Task workflows
 
 ### create-and-update-organization

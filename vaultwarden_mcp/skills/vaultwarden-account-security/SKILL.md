@@ -19,6 +19,20 @@ These tools act on the signed-in account only.
 - Never print master passwords, recovery codes, API keys or device tokens.
 - Deleting the account needs the person's explicit request and confirm=true.
 
+## Steps
+1. Read the signed-in account with `vaultwarden_profile`. Verify the returned email is the account the person asked about.
+2. Pick the matching workflow below and note its first tool, for example `vaultwarden_post_password` for credentials or `vaultwarden_get_all_devices` for devices. Verify it acts on the signed-in account and not on another person's.
+3. For two-factor changes, add the new method with `vaultwarden_generate_authenticator` and `vaultwarden_activate_authenticator` before removing the old one with `vaultwarden_disable_twofactor`. Verify the new method is active before the removal.
+4. For a destructive tool such as `vaultwarden_delete_account` or `vaultwarden_delete_webauthn`, ask the person first and pass `confirm=true` only after they agree. Verify the person's explicit request is on record.
+5. Read the result back with `vaultwarden_profile` or `vaultwarden_get_all_devices`. Verify the change shows and no secret appears in the output you share.
+
+## Failure recovery
+| Failure | Cause | Recovery |
+|---------|-------|----------|
+| Destructive call refused | `confirm=true` was not passed | Ask the person to confirm, then call the same tool with `confirm=true` |
+| Authentication error | Credential aliases `CLIENT_ID`, `CLIENT_SECRET` or `MASTER_PASSWORD` unset | Ask the operator to set them, then call `vaultwarden_profile` to confirm sign-in |
+| Locked out after removing a factor | The old two-factor method was removed before the new one was active | Re-enable a method with `vaultwarden_generate_authenticator` and `vaultwarden_activate_authenticator` while still signed in |
+
 ## Task workflows
 
 ### manage-my-profile

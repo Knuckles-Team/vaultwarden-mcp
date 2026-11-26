@@ -19,6 +19,20 @@ The admin tools need the instance admin token. Check status and diagnostics firs
 - Never print the admin token.
 - Disable before delete when a user may return.
 
+## Steps
+1. Check liveness and diagnostics with `vaultwarden_get_diagnostics_config`. Verify it succeeds, which proves the admin token works.
+2. Back up first with `vaultwarden_backup_db` before deleting users or changing config. Verify the call returns success.
+3. List users with `vaultwarden_get_users_json`. Verify the target user id appears.
+4. Apply the change, preferring `vaultwarden_disable_user` over deletion. Verify the call returns success for that user id.
+5. For a destructive tool such as `vaultwarden_delete_user`, ask the person and pass `confirm=true` only after they agree. Verify the user is not one who may return.
+
+## Failure recovery
+| Failure | Cause | Recovery |
+|---------|-------|----------|
+| Unauthorized on admin tools | The `ADMIN_TOKEN` alias is unset or wrong | Ask the operator to set `ADMIN_TOKEN`, then call `vaultwarden_get_diagnostics_config` to confirm |
+| Destructive call refused | `confirm=true` was not passed | Ask the person to confirm, then call the same tool with `confirm=true` |
+| User not found | Wrong `user_id` | Call `vaultwarden_get_user_by_mail_json` with the email and use the returned id |
+
 ## Task workflows
 
 ### administer-users
