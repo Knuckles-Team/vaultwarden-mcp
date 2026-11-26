@@ -26,15 +26,6 @@
 
 ---
 
-## Table of Contents
-- [Overview](#overview)
-- [Installation](#installation)
-- [Usage](#usage)
-- [Architecture](#architecture)
-- [Environment Variables](#environment-variables)
-- [MCP Tools](#available-mcp-tools)
-- [Documentation](#documentation)
-
 ## Overview
 
 `vaultwarden-mcp` exposes a standardized interface to a Vaultwarden (Bitwarden-compatible)
@@ -59,140 +50,7 @@ action router, telemetry, governance) for fleet consistency.
 - **Per-tool toggles** — enable or disable each tool domain with environment switches.
 - **Enterprise-ready** — OTEL/Langfuse telemetry and optional Eunomia access governance.
 
-## Installation
-
-### Install with `uvx` (no install — run on demand)
-
-```bash
-uvx --from "vaultwarden-mcp[mcp]" vaultwarden-mcp      # MCP server + full graph engine
-```
-
-> Every supported install includes `medulla[full]`. The `[mcp]` extra adds
-
-### Install with `pip`
-
-```bash
-python -m pip install vaultwarden-mcp            # core (API client)
-python -m pip install "vaultwarden-mcp[all]"     # + MCP server + A2A agent + telemetry
-```
-
-| Extra | Installs | Use when |
-|-------|----------|----------|
-| `vaultwarden-mcp[mcp]` | Connector-focused MCP server (`scion-sdk` — FastMCP/FastAPI + `medulla[full]`) | The operator only run the **MCP server** (smallest install / image) |
-| `vaultwarden-mcp[all]` | Everything (`mcp` + `agent` + `logfire`) | Development / both surfaces |
-
-### Console scripts
-
-After installation the following entry points are available on the operator's `PATH`:
-
-| Command | Description |
-|---------|-------------|
-| `vaultwarden-mcp` | Start the MCP server |
-
-### Container images (`:mcp`)
-
-One multi-stage `docker/Dockerfile` builds the MCP-only image (`--target mcp`):
-
-| Local build tag | Build target | Contents | Entrypoint |
-|-----------|--------------|----------|------------|
-| `vaultwarden-mcp:mcp-local` | `--target mcp` | `vaultwarden-mcp[mcp]` — MCP serving runtime + `medulla[full]` | `vaultwarden-mcp` |
-
-```bash
-docker build --target mcp   -t vaultwarden-mcp:mcp-local docker/
-```
-
-## Usage
-
-### As a Python API client
-
-```python
-from vaultwarden_mcp.auth import get_client, get_vault_crypto
-
-client = get_client()               # resolves provider_configs.vaultwarden from AgentConfig
-print(client.server_version())
-
-vault = get_vault_crypto()          # unlocks the decrypted-vault backend on demand
-for item in vault.list_items():
-    print(item["id"], item["type"])
-```
-
-### As an MCP server (CLI)
-
-```bash
-# Local stdio (for IDEs)
-vaultwarden-mcp
-
-# Networked streamable-http
-vaultwarden-mcp --transport streamable-http --host 127.0.0.1 --port 8000
-```
-
-### Calling an MCP tool
-
-Every operation is its own typed tool. Example:
-
-```json
-{
-  "tool": "vaultwarden_version",
-  "arguments": {}
-}
-```
-
-Destructive actions (bulk trash, permanent removal, disabling a user) also
-require `"confirm": true` in `params_json`.
-
-## Architecture
-
-`vaultwarden_mcp/api/api_client_base.py` (`VaultwardenApiBase`) owns HTTP transport and
-authentication: it never follows redirects, stays pinned to the configured origin, bounds
-response size and time, and distinguishes three auth modes per request —
-
-- `user` — a bearer token from the account's personal API key
-  (`grant_type=client_credentials`), cached until shortly before expiry and renewed once
-  on a `401`;
-- `admin` — the `VW_ADMIN` session cookie issued after posting the instance admin token
-  to `/admin`;
-- `none` — public endpoints (`/alive`, `/api/version`, `/api/config`, prelogin).
-
-`vaultwarden_mcp/api/_routes.py` is a committed, data-only catalog of all 281 Vaultwarden
-1.37.3 API operations (accounts 39, ciphers 58, organizations 77, two-factor 26, admin 20,
-emergency access 18, sends 14, folders 7, identity 6, misc 9, icons 2, events 4, public 1),
-normalized from the server's own Rocket route attributes. `api/_operation_manifest.py`
-derives a fully-typed parameter schema per operation from that catalog, consumed when
-`MCP_TOOL_MODE=verbose` to synthesize one MCP tool per operation instead of a generic
-`params_json` fallback.
-
-**The soft-remove trap:** `PUT /api/ciphers/delete` moves items to trash (recoverable for
-30 days) — this is the only bulk-remove route this package's tools ever call.
-`POST /api/ciphers/delete` and `DELETE /api/ciphers` are **permanent** in Vaultwarden and
-are deliberately not wired to any bulk-remove tool action.
-
-**Decrypted vault access** (`vaultwarden_mcp/crypto/`) is a pluggable `VaultCrypto`
-backend, selected by `selector_refs.CRYPTO_BACKEND`:
-
-- `native` (default) — pure-Python key derivation (PBKDF2-SHA256 or Argon2id) and HKDF
-  stretching (`crypto/keys.py`), AES-256-CBC + HMAC-SHA256 EncStrings with the MAC
-  checked before any decryption, and RSA-OAEP unwrap of organization and per-item keys
-  (`crypto/encstring.py`). Only strict type-2 EncStrings are decrypted; anything else
-  passes through unchanged. Validated against Bitwarden's own published SDK test vectors.
-- `bw_cli` — delegates key handling to an installed Bitwarden CLI (`bw`), driving a
-  private, per-instance CLI data directory rather than the invoking user's real login
-  state, with credentials passed only through the child process environment.
-
-Both backends produce and accept records in the Bitwarden CLI JSON shape, so
-`vaultwarden_mcp/vault/dedupe.py` (exact or loose duplicate matching, keep-newest
-selection, bulk soft-remove apply) behaves identically in either case of backend.
-
-`vaultwarden_mcp/kg_ingest.py` projects vault entities as typed OWL nodes
-(`:VaultwardenItem` subclasses, `:VaultwardenFolder`, `:VaultwardenCollection`,
-`:VaultwardenServer`) and relationships (`:vaultwardenInFolder`,
-`:vaultwardenInOrganization`, `:vaultwardenInCollection`) through the certified
-`vaultwarden-metadata` source preset. Scion SDK `source_sync` is the sole
-graph commit, checkpoint, and reconcile authority. Only
-identifiers, type codes, lifecycle dates, counts, and relationships are accepted — every
-item name, username, password, note, URI, TOTP seed, custom field, attachment, folder
-name, collection name, send content, and key is rejected before it ever reaches the graph
-(`vaultwarden_mcp/ontology/vaultwarden.ttl`). See
-[`docs/ingestion.md`](docs/ingestion.md) for the exact envelope and lifecycle.
+---
 
 ## MCP
 
@@ -342,85 +200,7 @@ copy-paste `mcp_config.json` for all four transports — **stdio**, **streamable
   `MCP_ALLOWED_HOSTS` in `AgentConfig`.
 <!-- END GENERATED: additional-deployment-options -->
 
-## Knowledge-graph database (`medulla`)
-
-Every image embeds the **medulla[full]** engine. For production — or to
-share one knowledge graph across multiple
-agents — run **medulla as its own database container** and point the agent at it.
-Deployment recipes (single-node + Raft HA), connection config, and the full database
-architecture (with diagrams) are in the
-[medulla deployment guide](https://knuckles-team.github.io/medulla/deployment/).
-Local engine autostart or an operator-configured remote engine is selected through AgentConfig.
-
-## Environment Variables
-
-<!-- ENV-VARS-TABLE:START -->
-
-#### Package environment variables
-
-| Variable | Example | Description |
-|----------|---------|-------------|
-| `HOST` | `127.0.0.1` |  |
-| `PORT` | `8000` |  |
-| `TRANSPORT` | `stdio` | options: stdio, streamable-http, sse |
-| `AUTH_TYPE` | `none` | network listeners outside loopback require configured authentication |
-| `MCP_TOOL_MODE` | `intent` |  |
-| `ENABLE_OTEL` | `False` |  |
-| `EUNOMIA_TYPE` | `none` | options: none, embedded, remote |
-| `EUNOMIA_POLICY_FILE` | `mcp_policies.json` |  |
-| `SYSTEMTOOL` | `True` |  |
-| `ACCOUNTSTOOL` | `True` |  |
-| `CIPHERSTOOL` | `True` |  |
-| `FOLDERSTOOL` | `True` |  |
-| `ORGANIZATIONSTOOL` | `True` |  |
-| `SENDSTOOL` | `True` |  |
-| `ADMINTOOL` | `True` |  |
-| `MAINTENANCETOOL` | `True` |  |
-| `VAULTWARDEN_MCP_IMAGE` | — | e.g. registry.example.invalid/vaultwarden-mcp@sha256:<digest> |
-| `VAULTWARDEN_AGENT_IMAGE` | — | e.g. registry.example.invalid/vaultwarden-mcp@sha256:<digest> |
-
-#### Inherited scion-sdk variables (apply to every connector)
-
-| Variable | Example | Description |
-|----------|---------|-------------|
-| `MCP_ENABLED_TOOLS` | — | Comma-separated tool allow-list |
-| `MCP_DISABLED_TOOLS` | — | Comma-separated tool deny-list |
-| `MCP_ENABLED_TAGS` | — | Comma-separated tag allow-list |
-| `MCP_DISABLED_TAGS` | — | Comma-separated tag deny-list |
-| `EUNOMIA_REMOTE_URL` | — | Remote Eunomia authorization server URL |
-| `OTEL_EXPORTER_OTLP_ENDPOINT` | — | OTLP collector endpoint |
-| `MCP_CLIENT_AUTH` | — | Outbound MCP child auth: `oidc-client-credentials` \| `basic` \| `none` |
-| `OIDC_CLIENT_ID` | — | OIDC client id (service-account auth) |
-| `OIDC_CLIENT_SECRET_REF` | `secret://identity/oidc-client-secret` | Runtime secret reference for the OIDC service account |
-| `MCP_BASIC_AUTH_USERNAME` | — | HTTP Basic username (`MCP_CLIENT_AUTH=basic`) |
-| `MCP_BASIC_AUTH_PASSWORD_REF` | `secret://identity/mcp-basic-password` | Runtime secret reference for HTTP Basic auth (`MCP_CLIENT_AUTH=basic`) |
-| `DEBUG` | `False` | Verbose logging |
-| `PYTHONUNBUFFERED` | `1` | Unbuffered stdout (recommended in containers) |
-| `MCP_URL` | `http://localhost:8000/mcp` | URL of the MCP server the agent connects to |
-| `PROVIDER` | — | Operator-configured LLM provider for the agent |
-| `MODEL_ID` | — | Operator-configured model id for the agent |
-| `ENABLE_WEB_UI` | `True` | Serve the AG-UI web interface |
-
-_18 package + 17 inherited variable(s). Auto-generated from `.env.example` + the shared scion-sdk set — do not edit._
-<!-- ENV-VARS-TABLE:END -->
-
-The `provider_configs.vaultwarden` profile referenced above (see `vaultwarden_mcp/auth.py`)
-carries reference-only configuration through `AgentConfig`:
-
-| Field | Notes |
-|-------|-------|
-| `enabled` | Toggles the profile. |
-| `endpoint_ref` | Must resolve to an HTTPS or loopback origin. |
-| `tls_profile` / `tls_profile_ref` | Exactly one of the two — a named trust policy, e.g. `{"system_trust": true, "ca_bundle_path": "..."}`. |
-| `credential_refs.CLIENT_ID` / `CLIENT_SECRET` | The account's personal API key (`client_credentials` grant). Upper-case aliases. |
-| `credential_refs.MASTER_PASSWORD` | Only needed for decrypted vault operations (`vaultwarden_ciphers_*`, `vaultwarden_folders_*`, maintenance). |
-| `credential_refs.ADMIN_TOKEN` | The plaintext instance admin token, only needed for the admin tools. |
-| `selector_refs.CRYPTO_BACKEND` | `native` (default) or `bw_cli` — see [Architecture](#architecture). |
-
-References are `env://NAME`, `vault://…`, or `secret://…`, resolved only at runtime — never
-a literal value.
-
-## Available MCP Tools
+### Available MCP Tools
 
 Each tool is **action-routed**: pass an `action` and a JSON `params_json` payload. Tool
 domains can be toggled on or off with the listed environment variable. The table below is
@@ -737,6 +517,231 @@ The tool domains this package registers (final names, once every domain module l
 `vaultwarden_organizations`, `vaultwarden_sends`, `vaultwarden_admin`, and
 `vaultwarden_maintenance`. Destructive operations require `"confirm": true`.
 
+---
+
+## Knowledge-graph database (`medulla`)
+
+Every image embeds the **medulla[full]** engine. For production — or to
+share one knowledge graph across multiple
+agents — run **medulla as its own database container** and point the agent at it.
+Deployment recipes (single-node + Raft HA), connection config, and the full database
+architecture (with diagrams) are in the
+[medulla deployment guide](https://knuckles-team.github.io/medulla/deployment/).
+Local engine autostart or an operator-configured remote engine is selected through AgentConfig.
+
+---
+
+## Environment Variables
+
+<!-- ENV-VARS-TABLE:START -->
+
+#### Package environment variables
+
+| Variable | Example | Description |
+|----------|---------|-------------|
+| `HOST` | `127.0.0.1` |  |
+| `PORT` | `8000` |  |
+| `TRANSPORT` | `stdio` | options: stdio, streamable-http, sse |
+| `AUTH_TYPE` | `none` | network listeners outside loopback require configured authentication |
+| `MCP_TOOL_MODE` | `intent` |  |
+| `ENABLE_OTEL` | `False` |  |
+| `EUNOMIA_TYPE` | `none` | options: none, embedded, remote |
+| `EUNOMIA_POLICY_FILE` | `mcp_policies.json` |  |
+| `SYSTEMTOOL` | `True` |  |
+| `ACCOUNTSTOOL` | `True` |  |
+| `CIPHERSTOOL` | `True` |  |
+| `FOLDERSTOOL` | `True` |  |
+| `ORGANIZATIONSTOOL` | `True` |  |
+| `SENDSTOOL` | `True` |  |
+| `ADMINTOOL` | `True` |  |
+| `MAINTENANCETOOL` | `True` |  |
+| `VAULTWARDEN_MCP_IMAGE` | — | e.g. registry.example.invalid/vaultwarden-mcp@sha256:<digest> |
+| `VAULTWARDEN_AGENT_IMAGE` | — | e.g. registry.example.invalid/vaultwarden-mcp@sha256:<digest> |
+
+#### Inherited scion-sdk variables (apply to every connector)
+
+| Variable | Example | Description |
+|----------|---------|-------------|
+| `MCP_ENABLED_TOOLS` | — | Comma-separated tool allow-list |
+| `MCP_DISABLED_TOOLS` | — | Comma-separated tool deny-list |
+| `MCP_ENABLED_TAGS` | — | Comma-separated tag allow-list |
+| `MCP_DISABLED_TAGS` | — | Comma-separated tag deny-list |
+| `EUNOMIA_REMOTE_URL` | — | Remote Eunomia authorization server URL |
+| `OTEL_EXPORTER_OTLP_ENDPOINT` | — | OTLP collector endpoint |
+| `MCP_CLIENT_AUTH` | — | Outbound MCP child auth: `oidc-client-credentials` \| `basic` \| `none` |
+| `OIDC_CLIENT_ID` | — | OIDC client id (service-account auth) |
+| `OIDC_CLIENT_SECRET_REF` | `secret://identity/oidc-client-secret` | Runtime secret reference for the OIDC service account |
+| `MCP_BASIC_AUTH_USERNAME` | — | HTTP Basic username (`MCP_CLIENT_AUTH=basic`) |
+| `MCP_BASIC_AUTH_PASSWORD_REF` | `secret://identity/mcp-basic-password` | Runtime secret reference for HTTP Basic auth (`MCP_CLIENT_AUTH=basic`) |
+| `DEBUG` | `False` | Verbose logging |
+| `PYTHONUNBUFFERED` | `1` | Unbuffered stdout (recommended in containers) |
+| `MCP_URL` | `http://localhost:8000/mcp` | URL of the MCP server the agent connects to |
+| `PROVIDER` | — | Operator-configured LLM provider for the agent |
+| `MODEL_ID` | — | Operator-configured model id for the agent |
+| `ENABLE_WEB_UI` | `True` | Serve the AG-UI web interface |
+
+_18 package + 17 inherited variable(s). Auto-generated from `.env.example` + the shared scion-sdk set — do not edit._
+<!-- ENV-VARS-TABLE:END -->
+
+The `provider_configs.vaultwarden` profile referenced above (see `vaultwarden_mcp/auth.py`)
+carries reference-only configuration through `AgentConfig`:
+
+| Field | Notes |
+|-------|-------|
+| `enabled` | Toggles the profile. |
+| `endpoint_ref` | Must resolve to an HTTPS or loopback origin. |
+| `tls_profile` / `tls_profile_ref` | Exactly one of the two — a named trust policy, e.g. `{"system_trust": true, "ca_bundle_path": "..."}`. |
+| `credential_refs.CLIENT_ID` / `CLIENT_SECRET` | The account's personal API key (`client_credentials` grant). Upper-case aliases. |
+| `credential_refs.MASTER_PASSWORD` | Only needed for decrypted vault operations (`vaultwarden_ciphers_*`, `vaultwarden_folders_*`, maintenance). |
+| `credential_refs.ADMIN_TOKEN` | The plaintext instance admin token, only needed for the admin tools. |
+| `selector_refs.CRYPTO_BACKEND` | `native` (default) or `bw_cli` — see [Architecture](#architecture). |
+
+References are `env://NAME`, `vault://…`, or `secret://…`, resolved only at runtime — never
+a literal value.
+
+---
+
+## Installation
+
+### Install with `uvx` (no install — run on demand)
+
+```bash
+uvx --from "vaultwarden-mcp[mcp]" vaultwarden-mcp      # MCP server + full graph engine
+```
+
+> Every supported install includes `medulla[full]`. The `[mcp]` extra adds
+
+### Install with `pip`
+
+```bash
+python -m pip install vaultwarden-mcp            # core (API client)
+python -m pip install "vaultwarden-mcp[all]"     # + MCP server + A2A agent + telemetry
+```
+
+| Extra | Installs | Use when |
+|-------|----------|----------|
+| `vaultwarden-mcp[mcp]` | Connector-focused MCP server (`scion-sdk` — FastMCP/FastAPI + `medulla[full]`) | The operator only run the **MCP server** (smallest install / image) |
+| `vaultwarden-mcp[all]` | Everything (`mcp` + `agent` + `logfire`) | Development / both surfaces |
+
+### Console scripts
+
+After installation the following entry points are available on the operator's `PATH`:
+
+| Command | Description |
+|---------|-------------|
+| `vaultwarden-mcp` | Start the MCP server |
+
+### Container images (`:mcp`)
+
+One multi-stage `docker/Dockerfile` builds the MCP-only image (`--target mcp`):
+
+| Local build tag | Build target | Contents | Entrypoint |
+|-----------|--------------|----------|------------|
+| `vaultwarden-mcp:mcp-local` | `--target mcp` | `vaultwarden-mcp[mcp]` — MCP serving runtime + `medulla[full]` | `vaultwarden-mcp` |
+
+```bash
+docker build --target mcp   -t vaultwarden-mcp:mcp-local docker/
+```
+
+---
+
+## Usage
+
+### As a Python API client
+
+```python
+from vaultwarden_mcp.auth import get_client, get_vault_crypto
+
+client = get_client()               # resolves provider_configs.vaultwarden from AgentConfig
+print(client.server_version())
+
+vault = get_vault_crypto()          # unlocks the decrypted-vault backend on demand
+for item in vault.list_items():
+    print(item["id"], item["type"])
+```
+
+### As an MCP server (CLI)
+
+```bash
+# Local stdio (for IDEs)
+vaultwarden-mcp
+
+# Networked streamable-http
+vaultwarden-mcp --transport streamable-http --host 127.0.0.1 --port 8000
+```
+
+### Calling an MCP tool
+
+Every operation is its own typed tool. Example:
+
+```json
+{
+  "tool": "vaultwarden_version",
+  "arguments": {}
+}
+```
+
+Destructive actions (bulk trash, permanent removal, disabling a user) also
+require `"confirm": true` in `params_json`.
+
+---
+
+## Architecture
+
+`vaultwarden_mcp/api/api_client_base.py` (`VaultwardenApiBase`) owns HTTP transport and
+authentication: it never follows redirects, stays pinned to the configured origin, bounds
+response size and time, and distinguishes three auth modes per request —
+
+- `user` — a bearer token from the account's personal API key
+  (`grant_type=client_credentials`), cached until shortly before expiry and renewed once
+  on a `401`;
+- `admin` — the `VW_ADMIN` session cookie issued after posting the instance admin token
+  to `/admin`;
+- `none` — public endpoints (`/alive`, `/api/version`, `/api/config`, prelogin).
+
+`vaultwarden_mcp/api/_routes.py` is a committed, data-only catalog of all 281 Vaultwarden
+1.37.3 API operations (accounts 39, ciphers 58, organizations 77, two-factor 26, admin 20,
+emergency access 18, sends 14, folders 7, identity 6, misc 9, icons 2, events 4, public 1),
+normalized from the server's own Rocket route attributes. `api/_operation_manifest.py`
+derives a fully-typed parameter schema per operation from that catalog, consumed when
+`MCP_TOOL_MODE=verbose` to synthesize one MCP tool per operation instead of a generic
+`params_json` fallback.
+
+**The soft-remove trap:** `PUT /api/ciphers/delete` moves items to trash (recoverable for
+30 days) — this is the only bulk-remove route this package's tools ever call.
+`POST /api/ciphers/delete` and `DELETE /api/ciphers` are **permanent** in Vaultwarden and
+are deliberately not wired to any bulk-remove tool action.
+
+**Decrypted vault access** (`vaultwarden_mcp/crypto/`) is a pluggable `VaultCrypto`
+backend, selected by `selector_refs.CRYPTO_BACKEND`:
+
+- `native` (default) — pure-Python key derivation (PBKDF2-SHA256 or Argon2id) and HKDF
+  stretching (`crypto/keys.py`), AES-256-CBC + HMAC-SHA256 EncStrings with the MAC
+  checked before any decryption, and RSA-OAEP unwrap of organization and per-item keys
+  (`crypto/encstring.py`). Only strict type-2 EncStrings are decrypted; anything else
+  passes through unchanged. Validated against Bitwarden's own published SDK test vectors.
+- `bw_cli` — delegates key handling to an installed Bitwarden CLI (`bw`), driving a
+  private, per-instance CLI data directory rather than the invoking user's real login
+  state, with credentials passed only through the child process environment.
+
+Both backends produce and accept records in the Bitwarden CLI JSON shape, so
+`vaultwarden_mcp/vault/dedupe.py` (exact or loose duplicate matching, keep-newest
+selection, bulk soft-remove apply) behaves identically in either case of backend.
+
+`vaultwarden_mcp/kg_ingest.py` projects vault entities as typed OWL nodes
+(`:VaultwardenItem` subclasses, `:VaultwardenFolder`, `:VaultwardenCollection`,
+`:VaultwardenServer`) and relationships (`:vaultwardenInFolder`,
+`:vaultwardenInOrganization`, `:vaultwardenInCollection`) through the certified
+`vaultwarden-metadata` source preset. Scion SDK `source_sync` is the sole
+graph commit, checkpoint, and reconcile authority. Only
+identifiers, type codes, lifecycle dates, counts, and relationships are accepted — every
+item name, username, password, note, URI, TOTP seed, custom field, attachment, folder
+name, collection name, send content, and key is rejected before it ever reaches the graph
+(`vaultwarden_mcp/ontology/vaultwarden.ttl`). See
+[`docs/ingestion.md`](docs/ingestion.md) for the exact envelope and lifecycle.
+
+---
+
 ## Documentation
 
 Full documentation is published to the GitHub Pages site and mirrored under `docs/`:
@@ -771,8 +776,6 @@ Contributions are welcome! Please ensure code quality by running local checks be
 - Lint code using `ruff check .`
 - Validate type-safety with `mypy .`
 - Run test suites using `pytest`
-
-
 
 <!-- GOVERNED-CAPABILITY:START -->
 ## Governed capability contract
