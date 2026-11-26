@@ -21,6 +21,20 @@ source projection, packaged skills, and ontology. Shared transport helpers,
 connector validation, release rendering, and delivery gates belong to
 `scion-sdk` and `pipelines`.
 
+## Steps
+1. Find the owning requirement with `git grep -n "<term>" -- specs`. Verify a spec row id is returned.
+2. Trace the changed operation through `vaultwarden_mcp/api/` and `vaultwarden_mcp/mcp/`, and edit only those files. Verify with `git diff --stat` that no unrelated file changed.
+3. Run the focused test for the seam, such as `uv run --frozen pytest -q tests/test_mcp_tools.py`. Verify it passes.
+4. Run the gate with `uvx pre-commit run --all-files`. Verify every hook reports Passed.
+5. Stage reviewed paths with `git add -- <path>` and commit with a `Spec:` trailer. Verify `git diff --cached --name-status` lists only intended files.
+
+## Failure recovery
+| Failure | Cause | Recovery |
+|---------|-------|----------|
+| No spec row found | The change has no owning requirement | Extend the nearest row under `specs/` before editing code |
+| A pre-commit hook fails | A shared gate rule was violated | Read the hook output, fix the named file at its source, and commit again with hooks active |
+| A test prints vault content | The test used real data | Replace it with synthetic fixtures such as those in `tests/test_crypto_vectors.py` and rerun the test |
+
 ## Repository map
 
 - `vaultwarden_mcp/api/` owns the route catalog, operation manifest, and typed
